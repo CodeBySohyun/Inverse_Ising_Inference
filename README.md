@@ -22,7 +22,7 @@ This repository contains the work for a final year Physics project at the Univer
   - `References/`: Theoretical and methodological literature.
 
 ## Execution Guide
-Process and analyze data in the following sequence:
+Process and analyse data in the following sequence:
 1. `ising_data_preprocessing.ipynb`: Prepares data for modeling.
 2. `ising_optimisation.ipynb`: Fits the Ising model to the data.
 3. `ising_visualisation.ipynb` & `ising_statistics.ipynb`: Visualisation and statistical analysis.
