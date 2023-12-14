@@ -26,7 +26,7 @@ Process and analyse data in the following sequence:
 1. `ising_data_preprocessing.ipynb`: Prepares data for modelling.
 2. `ising_optimisation.ipynb`: Fits the Ising model to the data.
 3. `ising_visualisation.ipynb` & `ising_statistics.ipynb`: Visualisation and statistical analysis.
-4. `network_app.py` & `network_pdf.py`: Additional analysis and reporting.
+4. `network_app.py` & `network_pdf.py`: Network analysis.
 
 For detailed execution instructions, please refer to the individual files.
 
