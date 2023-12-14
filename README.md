@@ -9,7 +9,7 @@ This repository contains the work for a final year Physics project at the Univer
   - `ising_data_preprocessing.ipynb`: Data preprocessing.
   - `ising_optimisation.ipynb`: Model optimisation.
   - `ising_statistics.ipynb`: Statistical analysis.
-  - `ising_visualisation.ipynb`: Data and model visualization.
+  - `ising_visualisation.ipynb`: Data and model visualisation.
 
 - **Scripts**:
   - `network_app.py`: Interactive network analysis application.
