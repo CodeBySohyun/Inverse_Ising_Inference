@@ -34,4 +34,4 @@ For detailed execution instructions, please refer to the individual files.
 Contributions via pull requests are encouraged and appreciated.
 
 ## Acknowledgments
-Gratitude to Dr. Thomas Machon for guidance, and the University of Bristol for support.
+Gratitude to Dr. Thomas Machon and Dr. Francesco Turci for guidance, and the University of Bristol for support.
