@@ -7,7 +7,8 @@ This repository contains the work for a final year Physics project at the Univer
 
 - **Notebooks**:
   - `ising_data_preprocessing.ipynb`: Data preprocessing.
-  - `ising_optimisation.ipynb`: Model optimisation.
+  - `ising_optimisation_original.ipynb`: Preliminary work for model optimisation with detailed comments
+  - `ising_optimisation.ipynb`: Streamlined code for model optimisation.
   - `ising_statistics.ipynb`: Statistical analysis.
   - `ising_visualisation.ipynb`: Data and model visualisation.
 
