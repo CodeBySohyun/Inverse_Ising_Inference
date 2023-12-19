@@ -32,15 +32,15 @@ TOOLTIP_TEMPLATE = """
 """
 COLORS = {
     'NAFTA': '#FF0000', # '#FF5733'
-    'EU': '#0000FF', # '#003399'
+    'EEA': '#0000FF', # '#003399'
     'ASEAN': '#00FF00', # '#00CC66'
     'Others': '#333333'
 }
 FREE_TRADE_AREAS = {
     'NAFTA': ['CAD', 'MXN'],  # North American Free Trade Agreement
-    'EU': ['EUR', 'DKK', 'CZK', 'SEK', 'NOK'],  # European Union
-    'ASEAN': ['SGD', 'MYR', 'THB', 'PHP'],  # Association of Southeast Asian Nations
-    'Others': ['AUD', 'GBP', 'JPY', 'NZD', 'CHF', 'CNY', 'RUB', 'TRY', 'ZAR']  # Other currencies
+    'EEA': ['EUR', 'CZK', 'DKK', 'NOK', 'SEK'],  # European Economic Area
+    'ASEAN': ['MYR', 'PHP', 'SGD', 'THB', 'IDR'],  # Association of Southeast Asian Nations
+    'Others': ['AUD', 'GBP', 'JPY', 'NZD', 'CHF', 'CNY', 'RUB', 'TRY', 'ZAR', 'HKD', 'HUF', 'ILS', 'INR', 'KRW']  # Other currencies
 }
 GRAPH_LAYOUT_RANGE = Range1d(-1.1, 1.1)
 DATA_FILE_PATH = 'Results/J_matrix.csv'
@@ -81,7 +81,7 @@ def calculate_betweenness_centrality(G, node_names):
     for u, v, data in G.edges(data=True):
         G_abs[u][v]['weight'] = abs(data['weight'])
 
-    betweenness_centrality = nx.betweenness_centrality(G, weight='weight')
+    betweenness_centrality = nx.betweenness_centrality(G_abs, weight='weight')
     betweenness_values = [betweenness_centrality.get(node, 0.0) for node in node_names]
     return betweenness_centrality, betweenness_values
 
@@ -124,7 +124,7 @@ def create_plot(nodes_cds, edges_cds):
 def create_legend(plot):
     legend_items = [
         LegendItem(label='NAFTA', renderers=[plot.circle(x=0, y=0, size=0, fill_color=COLORS['NAFTA'])]),
-        LegendItem(label='EU', renderers=[plot.circle(x=0, y=0, size=0, fill_color=COLORS['EU'])]),
+        LegendItem(label='EEA', renderers=[plot.circle(x=0, y=0, size=0, fill_color=COLORS['EEA'])]),
         LegendItem(label='ASEAN', renderers=[plot.circle(x=0, y=0, size=0, fill_color=COLORS['ASEAN'])]),
         LegendItem(label='Others', renderers=[plot.circle(x=0, y=0, size=0, fill_color=COLORS['Others'])]),
     ]
@@ -144,7 +144,7 @@ def create_data_table(source, width=200, height=680):
     data_table = DataTable(source=source, columns=columns, width=width, height=height, index_position=None)
     return column(Div(text="<b>Betweenness Centrality</b>"), data_table)
 
-def create_slider(update_callback, edges_cds, step=0.01, title="Threshold"):
+def create_slider(update_callback, edges_cds, positive_threshold_line, negative_threshold_line, step=0.01, title="Threshold"):
     # Create a mapping function from the weights
     weights = np.array(edges_cds.data['weight'])  # Extract the weight data
     mapping_func = generate_nonlinear_mapping(weights)
@@ -167,6 +167,10 @@ def create_slider(update_callback, edges_cds, step=0.01, title="Threshold"):
         threshold_value_div.text = f"Absolute Threshold Value: {mapped_value}"
         # Now call the original update callback with the mapped value
         update_callback(attr, old, mapped_value)
+
+        # Update the location of the threshold lines
+        positive_threshold_line.location = mapped_value
+        negative_threshold_line.location = mapped_value
     
     slider.on_change('value', new_update_callback)
 
@@ -235,7 +239,7 @@ def update(attr, old, new):
     sub_G = new_G.subgraph(largest_cc).copy()
 
     # Recalculate node positions based on the filtered graph
-    new_positions = calculate_positions(sub_G, threshold)
+    new_positions = calculate_positions(sub_G, threshold, nodes_cds.data['name'])
 
     # Check if new_positions is empty and handle accordingly
     if not new_positions:
@@ -279,10 +283,17 @@ def update(attr, old, new):
     # Write new_graph to a file
     nx.write_gexf(new_G, 'thresholded_graph.gexf')
 
-def calculate_positions(G, weight_threshold):
+def calculate_positions(G, weight_threshold, all_nodes):
     edges_to_keep = [(u, v) for u, v, d in G.edges(data=True) if d['weight'] > weight_threshold]
     filtered_graph = G.edge_subgraph(edges_to_keep).copy()
-    return nx.spring_layout(filtered_graph, seed=42)
+    positions = nx.spring_layout(filtered_graph, seed=42)
+
+    # Assign positions to nodes not in filtered_graph
+    for node in all_nodes:
+        if node not in positions:
+            positions[node] = (0, 0)  # Default position, can be adjusted as needed
+
+    return positions
 
 def update_node_weights(G, largest_cc):
     """Update node weights based on the largest connected component in the new graph."""
@@ -330,6 +341,10 @@ def trigger_initial_update():
 # Load data and create network graph
 J, G = load_data(DATA_FILE_PATH)
 
+# Direct calculation on full graph
+bc_full = nx.betweenness_centrality(G, weight='weight')
+bc_full_abs = nx.betweenness_centrality(G, weight=lambda u, v, d: abs(d.get('weight', 1)))
+
 # Create ColumnDataSource for nodes and edges
 nodes_cds, edges_cds = initialise_graph_components(G)
 
@@ -337,22 +352,26 @@ nodes_cds, edges_cds = initialise_graph_components(G)
 plot, graph_renderer = create_plot(nodes_cds, edges_cds)
 
 # Create histogram plots with specified ranges
-positive_fig, negative_fig, positive_plot_data_source, negative_plot_data_source = create_histogram_plots()
+positive_fig, negative_fig, positive_plot_data_source, negative_plot_data_source, positive_threshold_line, negative_threshold_line = create_histogram_plots()
 
 # Create DataTable to display betweenness centrality
 bc_source = ColumnDataSource({'currency': [], 'betweenness': []})
 bc_table = create_data_table(bc_source)
 
 # Setup widgets and layout
-slider, threshold_value_div = create_slider(update, edges_cds)
+slider, threshold_value_div = create_slider(update, edges_cds, positive_threshold_line, negative_threshold_line)
 
+# Create a Div for name and LinkedIn icon
+author_table = add_author_credit("Sohyun Park", "https://www.linkedin.com/in/sohyun-park-physics/", "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png")
+
+# Create layout
 plot_layout = column(TITLE, plot)
-histograms_layout = column(positive_fig, negative_fig, sizing_mode="scale_width")
+histograms_layout = column(positive_fig, negative_fig, author_table, sizing_mode="scale_width")
 stats_layout = row(bc_table, histograms_layout, sizing_mode="scale_width")
 controls_layout = column(slider, threshold_value_div, stats_layout, sizing_mode="scale_width")
 main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
 
-# add_author_credit(plot, "Sohyun Park", "https://www.linkedin.com/in/sohyun-park-physics/", 10, 10)
+curdoc().title = "Currency Network"
 curdoc().clear()
 curdoc().add_root(main_layout)
 curdoc().add_next_tick_callback(trigger_initial_update)

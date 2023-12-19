@@ -1,4 +1,4 @@
-from bokeh.models import ColumnDataSource
+from bokeh.models import ColumnDataSource, Span
 from bokeh.plotting import figure
 from bokeh.palettes import RdBu as palette
 import numpy as np
@@ -45,9 +45,6 @@ def calculate_couplings_histogram(j_matrix_df):
     
     return positive_source, negative_source
 
-# Use the function to get the data sources
-# positive_source, negative_source = calculate_couplings_histogram(pd.read_csv("Results/J_matrix.csv"))
-
 # Now we have a function that can be integrated into the Bokeh app script.
 # The function returns ColumnDataSources which can be directly used to source a Bokeh plot.
 # This can be inserted into the script, and the plotting part can be called within the Bokeh server document lifecycle.
@@ -66,14 +63,13 @@ def calculate_couplings_histogram(j_matrix_df):
 # The plots would need to be initially created with these data sources, and the callback
 # would update them as described above.
 
-
 # Let's define another function that creates the histogram plots for the positive and negative couplings.
-# This function will initialize the plots and data sources, which can be updated in the 'update' function.
+# This function will initialise the plots and data sources, which can be updated in the 'update' function.
 
 def create_histogram_plots():
     """
     This function creates histogram plots for the positive and negative couplings
-    and initializes the ColumnDataSources for them.
+    and initialises the ColumnDataSources for them.
 
     Returns:
     - A tuple of (positive_fig, negative_fig, positive_source, negative_source)
@@ -112,7 +108,15 @@ def create_histogram_plots():
     negative_fig.toolbar.logo = None
     negative_fig.toolbar_location = None
 
-    return positive_fig, negative_fig, positive_source, negative_source
+    # Initialise the vertical line glyph at x=0, this location will be updated dynamically
+    positive_threshold_line = Span(location=0, dimension='height', line_color='black', line_width=1)
+    negative_threshold_line = Span(location=0, dimension='height', line_color='black', line_width=1)
+
+    # Add the vertical line glyph to the figures
+    positive_fig.add_layout(positive_threshold_line)
+    negative_fig.add_layout(negative_threshold_line)
+
+    return positive_fig, negative_fig, positive_source, negative_source, positive_threshold_line, negative_threshold_line
 
 # This function can be called in the main part of the Bokeh app script to create the plots and data sources.
 # The returned figures can be added to the layout, and the data sources can be updated in the 'update' callback.
