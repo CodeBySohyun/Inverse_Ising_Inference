@@ -10,7 +10,7 @@ from bokeh.transform import transform
 from bokeh.palettes import RdBu as palette
 from decorators import debug, exception_handler
 from network_pdf import calculate_couplings_histogram, create_histogram_plots
-from author_credit import add_author_credit
+from author_credit import add_author_table
 import networkx as nx
 import pandas as pd
 import numpy as np
@@ -362,7 +362,7 @@ bc_table = create_data_table(bc_source)
 slider, threshold_value_div = create_slider(update, edges_cds, positive_threshold_line, negative_threshold_line)
 
 # Create a Div for name and LinkedIn icon
-author_table = add_author_credit("Sohyun Park", "https://www.linkedin.com/in/sohyun-park-physics/", "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png")
+author_table = add_author_table("Sohyun Park", "https://www.linkedin.com/in/sohyun-park-physics/", "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png")
 
 # Create layout
 plot_layout = column(TITLE, plot)
