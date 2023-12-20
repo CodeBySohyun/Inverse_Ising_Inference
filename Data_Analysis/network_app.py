@@ -17,8 +17,14 @@ import logging
 import networkx as nx
 import pandas as pd
 import numpy as np
+import os
 
-# Constants
+print("Current directory:", os.getcwd())
+print("Files in Results directory:", os.listdir('Data_Analysis/Results'))
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE_PATH = os.path.join(BASE_DIR, 'Results', 'J_matrix.csv')
+
 TITLE = Div(text="""
     <div style="text-align:left;">
         <span style="font-size:16pt;"><b>Currency Network</b></span><br>
@@ -50,7 +56,6 @@ FREE_TRADE_AREAS = {
 }
 
 GRAPH_LAYOUT_RANGE = Range1d(-1.1, 1.1)
-DATA_FILE_PATH = 'Results/J_matrix.csv'
 
 def load_data(file_path: str) -> tuple:
     """
