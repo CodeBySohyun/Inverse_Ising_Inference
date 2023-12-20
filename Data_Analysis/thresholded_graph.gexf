@@ -1,0 +1,362 @@
+<?xml version='1.0' encoding='utf-8'?>
+<gexf xmlns="http://www.gexf.net/1.2draft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.gexf.net/1.2draft http://www.gexf.net/1.2draft/gexf.xsd" version="1.2">
+  <meta lastmodifieddate="2023-12-20">
+    <creator>NetworkX 3.2</creator>
+  </meta>
+  <graph defaultedgetype="undirected" mode="static" name="">
+    <nodes>
+      <node id="AUD" label="AUD" />
+      <node id="EUR" label="EUR" />
+      <node id="GBP" label="GBP" />
+      <node id="JPY" label="JPY" />
+      <node id="NZD" label="NZD" />
+      <node id="CAD" label="CAD" />
+      <node id="CHF" label="CHF" />
+      <node id="CNY" label="CNY" />
+      <node id="CZK" label="CZK" />
+      <node id="DKK" label="DKK" />
+      <node id="HKD" label="HKD" />
+      <node id="HUF" label="HUF" />
+      <node id="IDR" label="IDR" />
+      <node id="ILS" label="ILS" />
+      <node id="INR" label="INR" />
+      <node id="KRW" label="KRW" />
+      <node id="MXN" label="MXN" />
+      <node id="MYR" label="MYR" />
+      <node id="NOK" label="NOK" />
+      <node id="PHP" label="PHP" />
+      <node id="RUB" label="RUB" />
+      <node id="SEK" label="SEK" />
+      <node id="SGD" label="SGD" />
+      <node id="THB" label="THB" />
+      <node id="TRY" label="TRY" />
+      <node id="ZAR" label="ZAR" />
+    </nodes>
+    <edges>
+      <edge source="AUD" target="EUR" id="0" weight="-0.0536897348795529" />
+      <edge source="AUD" target="GBP" id="1" weight="0.1147700369624343" />
+      <edge source="AUD" target="JPY" id="2" weight="0.0180994777873301" />
+      <edge source="AUD" target="NZD" id="3" weight="0.4337657304375796" />
+      <edge source="AUD" target="CAD" id="4" weight="0.2040549113713269" />
+      <edge source="AUD" target="CHF" id="5" weight="-0.049645929227858" />
+      <edge source="AUD" target="CNY" id="6" weight="0.0123498742622418" />
+      <edge source="AUD" target="CZK" id="7" weight="0.0198342653681829" />
+      <edge source="AUD" target="DKK" id="8" weight="0.0272332200464902" />
+      <edge source="AUD" target="HKD" id="9" weight="0.0525486144467395" />
+      <edge source="AUD" target="HUF" id="10" weight="0.0770186537955972" />
+      <edge source="AUD" target="IDR" id="11" weight="0.0624084815845015" />
+      <edge source="AUD" target="ILS" id="12" weight="-0.0093253646186467" />
+      <edge source="AUD" target="INR" id="13" weight="-0.0036637370552644" />
+      <edge source="AUD" target="KRW" id="14" weight="0.0526065730168268" />
+      <edge source="AUD" target="MXN" id="15" weight="0.0035119243896131" />
+      <edge source="AUD" target="MYR" id="16" weight="0.0288314255008074" />
+      <edge source="AUD" target="NOK" id="17" weight="0.0583072983964611" />
+      <edge source="AUD" target="PHP" id="18" weight="-0.00620910932742" />
+      <edge source="AUD" target="RUB" id="19" weight="0.0866128961036034" />
+      <edge source="AUD" target="SEK" id="20" weight="0.0862436903366552" />
+      <edge source="AUD" target="SGD" id="21" weight="0.1994650685253768" />
+      <edge source="AUD" target="THB" id="22" weight="0.0254880455195675" />
+      <edge source="AUD" target="TRY" id="23" weight="0.0445960524635049" />
+      <edge source="AUD" target="ZAR" id="24" weight="0.1593058662922353" />
+      <edge source="EUR" target="GBP" id="25" weight="0.0953642528912088" />
+      <edge source="EUR" target="JPY" id="26" weight="0.0120704002448104" />
+      <edge source="EUR" target="NZD" id="27" weight="0.1040148294654515" />
+      <edge source="EUR" target="CAD" id="28" weight="-0.0782816277757008" />
+      <edge source="EUR" target="CHF" id="29" weight="0.1978376557112237" />
+      <edge source="EUR" target="CNY" id="30" weight="-0.0070701240067628" />
+      <edge source="EUR" target="CZK" id="31" weight="0.337568765888137" />
+      <edge source="EUR" target="DKK" id="32" weight="1.3364548911556149" />
+      <edge source="EUR" target="HKD" id="33" weight="0.0786483935373944" />
+      <edge source="EUR" target="HUF" id="34" weight="0.1046635193124022" />
+      <edge source="EUR" target="IDR" id="35" weight="0.0113899487990295" />
+      <edge source="EUR" target="ILS" id="36" weight="0.0304367760611619" />
+      <edge source="EUR" target="INR" id="37" weight="-0.0581840062887911" />
+      <edge source="EUR" target="KRW" id="38" weight="0.082608814833785" />
+      <edge source="EUR" target="MXN" id="39" weight="-0.0234812290018604" />
+      <edge source="EUR" target="MYR" id="40" weight="0.0274608381523974" />
+      <edge source="EUR" target="NOK" id="41" weight="-0.0255877287146174" />
+      <edge source="EUR" target="PHP" id="42" weight="-0.0469854898106687" />
+      <edge source="EUR" target="RUB" id="43" weight="0.0710454215262502" />
+      <edge source="EUR" target="SEK" id="44" weight="0.1243370838356442" />
+      <edge source="EUR" target="SGD" id="45" weight="-0.0512144269714713" />
+      <edge source="EUR" target="THB" id="46" weight="0.0845926900886987" />
+      <edge source="EUR" target="TRY" id="47" weight="0.0435939201194115" />
+      <edge source="EUR" target="ZAR" id="48" weight="0.019808576723308" />
+      <edge source="GBP" target="JPY" id="49" weight="0.0668084208753522" />
+      <edge source="GBP" target="NZD" id="50" weight="0.0292204933758347" />
+      <edge source="GBP" target="CAD" id="51" weight="0.0936618379189924" />
+      <edge source="GBP" target="CHF" id="52" weight="0.0749847549408467" />
+      <edge source="GBP" target="CNY" id="53" weight="-0.0077917007324448" />
+      <edge source="GBP" target="CZK" id="54" weight="0.0908588046747267" />
+      <edge source="GBP" target="DKK" id="55" weight="0.0571180565818401" />
+      <edge source="GBP" target="HKD" id="56" weight="0.0229119812803775" />
+      <edge source="GBP" target="HUF" id="57" weight="0.063489087014825" />
+      <edge source="GBP" target="IDR" id="58" weight="-0.0061810828311335" />
+      <edge source="GBP" target="ILS" id="59" weight="0.0226711753103403" />
+      <edge source="GBP" target="INR" id="60" weight="0.0177621929445785" />
+      <edge source="GBP" target="KRW" id="61" weight="0.0143106241331572" />
+      <edge source="GBP" target="MXN" id="62" weight="0.0466562216104333" />
+      <edge source="GBP" target="MYR" id="63" weight="0.0161346894013974" />
+      <edge source="GBP" target="NOK" id="64" weight="0.1099010490516318" />
+      <edge source="GBP" target="PHP" id="65" weight="0.0007215346079818" />
+      <edge source="GBP" target="RUB" id="66" weight="0.0158302183905453" />
+      <edge source="GBP" target="SEK" id="67" weight="0.0308640303915343" />
+      <edge source="GBP" target="SGD" id="68" weight="0.0930346152617993" />
+      <edge source="GBP" target="THB" id="69" weight="0.0268210296951886" />
+      <edge source="GBP" target="TRY" id="70" weight="-0.0197365330655564" />
+      <edge source="GBP" target="ZAR" id="71" weight="0.0120675365714096" />
+      <edge source="JPY" target="NZD" id="72" weight="0.0685040537087233" />
+      <edge source="JPY" target="CAD" id="73" weight="-0.0630902959454214" />
+      <edge source="JPY" target="CHF" id="74" weight="0.2925713272901546" />
+      <edge source="JPY" target="CNY" id="75" weight="0.0121724424868743" />
+      <edge source="JPY" target="CZK" id="76" weight="0.0194518024896143" />
+      <edge source="JPY" target="DKK" id="77" weight="0.0642623731222178" />
+      <edge source="JPY" target="HKD" id="78" weight="0.0163938896101162" />
+      <edge source="JPY" target="HUF" id="79" weight="-0.0443062859334246" />
+      <edge source="JPY" target="IDR" id="80" weight="-0.0059119251198844" />
+      <edge source="JPY" target="ILS" id="81" weight="-0.0376421345439827" />
+      <edge source="JPY" target="INR" id="82" weight="-0.0033362888551365" />
+      <edge source="JPY" target="KRW" id="83" weight="-0.0096663696337572" />
+      <edge source="JPY" target="MXN" id="84" weight="-0.0435790768510378" />
+      <edge source="JPY" target="MYR" id="85" weight="0.001847723053824" />
+      <edge source="JPY" target="NOK" id="86" weight="-0.0443432246812692" />
+      <edge source="JPY" target="PHP" id="87" weight="-0.0293432987294299" />
+      <edge source="JPY" target="RUB" id="88" weight="-0.0498080933523014" />
+      <edge source="JPY" target="SEK" id="89" weight="-0.0319823755479901" />
+      <edge source="JPY" target="SGD" id="90" weight="0.1146085920045956" />
+      <edge source="JPY" target="THB" id="91" weight="0.0516787523522159" />
+      <edge source="JPY" target="TRY" id="92" weight="-0.0740685125149938" />
+      <edge source="JPY" target="ZAR" id="93" weight="-0.0187398885910632" />
+      <edge source="NZD" target="CAD" id="94" weight="0.1046792097905082" />
+      <edge source="NZD" target="CHF" id="95" weight="0.0038598682674539" />
+      <edge source="NZD" target="CNY" id="96" weight="0.0212188505917628" />
+      <edge source="NZD" target="CZK" id="97" weight="0.0117904032005483" />
+      <edge source="NZD" target="DKK" id="98" weight="-0.069079511534068" />
+      <edge source="NZD" target="HKD" id="99" weight="0.0242791202273954" />
+      <edge source="NZD" target="HUF" id="100" weight="-0.0225648124259305" />
+      <edge source="NZD" target="IDR" id="101" weight="-0.0167363992429051" />
+      <edge source="NZD" target="ILS" id="102" weight="0.0227337088947725" />
+      <edge source="NZD" target="INR" id="103" weight="0.0343703047374509" />
+      <edge source="NZD" target="KRW" id="104" weight="0.0626188002866435" />
+      <edge source="NZD" target="MXN" id="105" weight="0.0651969933613224" />
+      <edge source="NZD" target="MYR" id="106" weight="-0.0101237657535867" />
+      <edge source="NZD" target="NOK" id="107" weight="0.1134184437047208" />
+      <edge source="NZD" target="PHP" id="108" weight="0.0233991611382526" />
+      <edge source="NZD" target="RUB" id="109" weight="-0.0269466659571389" />
+      <edge source="NZD" target="SEK" id="110" weight="0.0562668075832953" />
+      <edge source="NZD" target="SGD" id="111" weight="0.1590475455034819" />
+      <edge source="NZD" target="THB" id="112" weight="0.016249721617879" />
+      <edge source="NZD" target="TRY" id="113" weight="0.0288217370999125" />
+      <edge source="NZD" target="ZAR" id="114" weight="0.0869998431642675" />
+      <edge source="CAD" target="CHF" id="115" weight="-0.0062885561318266" />
+      <edge source="CAD" target="CNY" id="116" weight="0.0022524628849772" />
+      <edge source="CAD" target="CZK" id="117" weight="0.0471832824162264" />
+      <edge source="CAD" target="DKK" id="118" weight="0.0332140565750325" />
+      <edge source="CAD" target="HKD" id="119" weight="0.0152618332374596" />
+      <edge source="CAD" target="HUF" id="120" weight="0.0388042986744402" />
+      <edge source="CAD" target="IDR" id="121" weight="0.0200212104412344" />
+      <edge source="CAD" target="ILS" id="122" weight="0.0443093182086714" />
+      <edge source="CAD" target="INR" id="123" weight="-0.0087682060389034" />
+      <edge source="CAD" target="KRW" id="124" weight="0.0179298759991068" />
+      <edge source="CAD" target="MXN" id="125" weight="0.0644729543641382" />
+      <edge source="CAD" target="MYR" id="126" weight="-0.0321675181429907" />
+      <edge source="CAD" target="NOK" id="127" weight="0.1580098845496849" />
+      <edge source="CAD" target="PHP" id="128" weight="0.0195177156363176" />
+      <edge source="CAD" target="RUB" id="129" weight="0.0798631462351277" />
+      <edge source="CAD" target="SEK" id="130" weight="0.0210541943238454" />
+      <edge source="CAD" target="SGD" id="131" weight="0.0706295276202589" />
+      <edge source="CAD" target="THB" id="132" weight="0.036599883390926" />
+      <edge source="CAD" target="TRY" id="133" weight="0.0277026126173762" />
+      <edge source="CAD" target="ZAR" id="134" weight="0.0855727911463859" />
+      <edge source="CHF" target="CNY" id="135" weight="0.0044048747113636" />
+      <edge source="CHF" target="CZK" id="136" weight="0.0628758540954849" />
+      <edge source="CHF" target="DKK" id="137" weight="0.2321950617300219" />
+      <edge source="CHF" target="HKD" id="138" weight="0.0101588457320683" />
+      <edge source="CHF" target="HUF" id="139" weight="0.0651809776481719" />
+      <edge source="CHF" target="IDR" id="140" weight="0.027901616154866" />
+      <edge source="CHF" target="ILS" id="141" weight="0.0389002944531118" />
+      <edge source="CHF" target="INR" id="142" weight="-0.0229128138400893" />
+      <edge source="CHF" target="KRW" id="143" weight="-0.00681447077789" />
+      <edge source="CHF" target="MXN" id="144" weight="-0.0310487686862104" />
+      <edge source="CHF" target="MYR" id="145" weight="0.021690412879508" />
+      <edge source="CHF" target="NOK" id="146" weight="0.118072492547432" />
+      <edge source="CHF" target="PHP" id="147" weight="-0.0283715339362081" />
+      <edge source="CHF" target="RUB" id="148" weight="0.0031718246281993" />
+      <edge source="CHF" target="SEK" id="149" weight="0.1044451788308303" />
+      <edge source="CHF" target="SGD" id="150" weight="0.0854112466244633" />
+      <edge source="CHF" target="THB" id="151" weight="0.025123938167696" />
+      <edge source="CHF" target="TRY" id="152" weight="0.0097149124393112" />
+      <edge source="CHF" target="ZAR" id="153" weight="-0.041285382495364" />
+      <edge source="CNY" target="CZK" id="154" weight="-0.0003655258182653" />
+      <edge source="CNY" target="DKK" id="155" weight="0.014547362067217" />
+      <edge source="CNY" target="HKD" id="156" weight="0.0451514359675822" />
+      <edge source="CNY" target="HUF" id="157" weight="-0.0144861419872245" />
+      <edge source="CNY" target="IDR" id="158" weight="0.0629500384331852" />
+      <edge source="CNY" target="ILS" id="159" weight="0.0370914635565464" />
+      <edge source="CNY" target="INR" id="160" weight="0.0332537637708973" />
+      <edge source="CNY" target="KRW" id="161" weight="0.0551859635310906" />
+      <edge source="CNY" target="MXN" id="162" weight="0.01793114197146" />
+      <edge source="CNY" target="MYR" id="163" weight="0.0175804889522834" />
+      <edge source="CNY" target="NOK" id="164" weight="0.0554114558733087" />
+      <edge source="CNY" target="PHP" id="165" weight="0.0609264630243807" />
+      <edge source="CNY" target="RUB" id="166" weight="0.0177947731283022" />
+      <edge source="CNY" target="SEK" id="167" weight="0.0069416456529125" />
+      <edge source="CNY" target="SGD" id="168" weight="0.0808077097781821" />
+      <edge source="CNY" target="THB" id="169" weight="0.0476358099783693" />
+      <edge source="CNY" target="TRY" id="170" weight="-0.0108474417023942" />
+      <edge source="CNY" target="ZAR" id="171" weight="-0.0187890514718424" />
+      <edge source="CZK" target="DKK" id="172" weight="0.246898683865851" />
+      <edge source="CZK" target="HKD" id="173" weight="-0.0337360768549216" />
+      <edge source="CZK" target="HUF" id="174" weight="0.2924422618140508" />
+      <edge source="CZK" target="IDR" id="175" weight="-0.0337677583697433" />
+      <edge source="CZK" target="ILS" id="176" weight="0.0709421002239761" />
+      <edge source="CZK" target="INR" id="177" weight="0.0194270082254655" />
+      <edge source="CZK" target="KRW" id="178" weight="-0.0006151065427954" />
+      <edge source="CZK" target="MXN" id="179" weight="0.0560400432461418" />
+      <edge source="CZK" target="MYR" id="180" weight="-0.001808786049074" />
+      <edge source="CZK" target="NOK" id="181" weight="0.0291943703946235" />
+      <edge source="CZK" target="PHP" id="182" weight="0.0087507864065991" />
+      <edge source="CZK" target="RUB" id="183" weight="0.0191576453317926" />
+      <edge source="CZK" target="SEK" id="184" weight="0.0990020295260669" />
+      <edge source="CZK" target="SGD" id="185" weight="0.0748666055116822" />
+      <edge source="CZK" target="THB" id="186" weight="0.0006130727040294" />
+      <edge source="CZK" target="TRY" id="187" weight="0.0047317939346817" />
+      <edge source="CZK" target="ZAR" id="188" weight="0.0214413393984729" />
+      <edge source="DKK" target="HKD" id="189" weight="-0.0837129579548161" />
+      <edge source="DKK" target="HUF" id="190" weight="0.196696803917625" />
+      <edge source="DKK" target="IDR" id="191" weight="0.0487082296421585" />
+      <edge source="DKK" target="ILS" id="192" weight="-0.0026051401699978" />
+      <edge source="DKK" target="INR" id="193" weight="0.0035209552814093" />
+      <edge source="DKK" target="KRW" id="194" weight="-0.0934922508006734" />
+      <edge source="DKK" target="MXN" id="195" weight="-0.0065357757987163" />
+      <edge source="DKK" target="MYR" id="196" weight="0.0154938189990336" />
+      <edge source="DKK" target="NOK" id="197" weight="0.1357584832684544" />
+      <edge source="DKK" target="PHP" id="198" weight="0.0553585675096885" />
+      <edge source="DKK" target="RUB" id="199" weight="0.0230809811001806" />
+      <edge source="DKK" target="SEK" id="200" weight="0.1992686026426752" />
+      <edge source="DKK" target="SGD" id="201" weight="0.1038232230574393" />
+      <edge source="DKK" target="THB" id="202" weight="-0.0479008755484897" />
+      <edge source="DKK" target="TRY" id="203" weight="-0.0492939359697648" />
+      <edge source="DKK" target="ZAR" id="204" weight="-0.0372240513168087" />
+      <edge source="HKD" target="HUF" id="205" weight="0.0136238203298071" />
+      <edge source="HKD" target="IDR" id="206" weight="-0.0017275227536993" />
+      <edge source="HKD" target="ILS" id="207" weight="0.034586171990284" />
+      <edge source="HKD" target="INR" id="208" weight="0.0352159483961682" />
+      <edge source="HKD" target="KRW" id="209" weight="0.0465749813799512" />
+      <edge source="HKD" target="MXN" id="210" weight="-0.019439984441181" />
+      <edge source="HKD" target="MYR" id="211" weight="0.0058535978071854" />
+      <edge source="HKD" target="NOK" id="212" weight="-0.0113603494231507" />
+      <edge source="HKD" target="PHP" id="213" weight="0.0496547096506511" />
+      <edge source="HKD" target="RUB" id="214" weight="0.0082549606399721" />
+      <edge source="HKD" target="SEK" id="215" weight="0.0157584147005059" />
+      <edge source="HKD" target="SGD" id="216" weight="0.0250270935529189" />
+      <edge source="HKD" target="THB" id="217" weight="0.0064401086610015" />
+      <edge source="HKD" target="TRY" id="218" weight="0.0015912999840187" />
+      <edge source="HUF" target="IDR" id="219" weight="0.0296928425399523" />
+      <edge source="HUF" target="ILS" id="220" weight="0.068987863147615" />
+      <edge source="HUF" target="INR" id="221" weight="0.0705200230527749" />
+      <edge source="HUF" target="KRW" id="222" weight="-0.0158989979781763" />
+      <edge source="HUF" target="MXN" id="223" weight="-0.0208256591474743" />
+      <edge source="HUF" target="MYR" id="224" weight="-0.0091384804603506" />
+      <edge source="HUF" target="NOK" id="225" weight="0.0633959971763737" />
+      <edge source="HUF" target="PHP" id="226" weight="0.017918162641311" />
+      <edge source="HUF" target="RUB" id="227" weight="0.0076607396283586" />
+      <edge source="HUF" target="SEK" id="228" weight="0.1007434490904157" />
+      <edge source="HUF" target="SGD" id="229" weight="0.0435286452274877" />
+      <edge source="HUF" target="THB" id="230" weight="0.0268775897311681" />
+      <edge source="HUF" target="TRY" id="231" weight="0.1397130161474594" />
+      <edge source="HUF" target="ZAR" id="232" weight="0.1219586455757294" />
+      <edge source="IDR" target="ILS" id="233" weight="-0.0091599732584787" />
+      <edge source="IDR" target="INR" id="234" weight="0.0939996331724655" />
+      <edge source="IDR" target="KRW" id="235" weight="0.1099111960157691" />
+      <edge source="IDR" target="MXN" id="236" weight="0.021887481421648" />
+      <edge source="IDR" target="MYR" id="237" weight="0.0551347842049981" />
+      <edge source="IDR" target="NOK" id="238" weight="0.0003384792386183" />
+      <edge source="IDR" target="PHP" id="239" weight="0.0959200592567785" />
+      <edge source="IDR" target="RUB" id="240" weight="0.0181952590394275" />
+      <edge source="IDR" target="SEK" id="241" weight="0.0156067669925257" />
+      <edge source="IDR" target="SGD" id="242" weight="0.0505601816271645" />
+      <edge source="IDR" target="THB" id="243" weight="0.0457010108611577" />
+      <edge source="IDR" target="TRY" id="244" weight="0.0216904093312683" />
+      <edge source="IDR" target="ZAR" id="245" weight="0.0321730125876561" />
+      <edge source="ILS" target="INR" id="246" weight="0.0420666712630885" />
+      <edge source="ILS" target="KRW" id="247" weight="0.0422446888009166" />
+      <edge source="ILS" target="MXN" id="248" weight="-0.0262150728464039" />
+      <edge source="ILS" target="MYR" id="249" weight="0.0399915598368271" />
+      <edge source="ILS" target="NOK" id="250" weight="0.0434546133937392" />
+      <edge source="ILS" target="PHP" id="251" weight="0.0411329249645281" />
+      <edge source="ILS" target="RUB" id="252" weight="0.0342646852377841" />
+      <edge source="ILS" target="SEK" id="253" weight="0.0286711472867525" />
+      <edge source="ILS" target="SGD" id="254" weight="0.0411231446257818" />
+      <edge source="ILS" target="THB" id="255" weight="0.0013593627829306" />
+      <edge source="ILS" target="TRY" id="256" weight="0.0934005667258051" />
+      <edge source="ILS" target="ZAR" id="257" weight="0.0293387885565059" />
+      <edge source="INR" target="KRW" id="258" weight="0.0913726437937751" />
+      <edge source="INR" target="MXN" id="259" weight="0.0141627254374157" />
+      <edge source="INR" target="MYR" id="260" weight="-0.0182402454214459" />
+      <edge source="INR" target="NOK" id="261" weight="0.006950807037813" />
+      <edge source="INR" target="PHP" id="262" weight="0.1215927818613316" />
+      <edge source="INR" target="RUB" id="263" weight="0.1088839424404966" />
+      <edge source="INR" target="SEK" id="264" weight="0.0062290326863693" />
+      <edge source="INR" target="SGD" id="265" weight="0.0644869809554751" />
+      <edge source="INR" target="THB" id="266" weight="0.0680844640162184" />
+      <edge source="INR" target="TRY" id="267" weight="0.0448123106796827" />
+      <edge source="INR" target="ZAR" id="268" weight="0.0846807493592178" />
+      <edge source="KRW" target="MXN" id="269" weight="0.0037371438267281" />
+      <edge source="KRW" target="MYR" id="270" weight="0.0496151610429982" />
+      <edge source="KRW" target="NOK" id="271" weight="0.0393341200337523" />
+      <edge source="KRW" target="PHP" id="272" weight="0.1115771816550037" />
+      <edge source="KRW" target="RUB" id="273" weight="0.0504099621418646" />
+      <edge source="KRW" target="SEK" id="274" weight="0.0057879261122928" />
+      <edge source="KRW" target="SGD" id="275" weight="0.1545914667870891" />
+      <edge source="KRW" target="THB" id="276" weight="0.1639863921726597" />
+      <edge source="KRW" target="TRY" id="277" weight="0.0425998048133356" />
+      <edge source="KRW" target="ZAR" id="278" weight="0.0504632483531536" />
+      <edge source="MXN" target="MYR" id="279" weight="0.1150092213438919" />
+      <edge source="MXN" target="NOK" id="280" weight="0.0284874465181202" />
+      <edge source="MXN" target="PHP" id="281" weight="-0.0061453264975596" />
+      <edge source="MXN" target="RUB" id="282" weight="-0.0003338209361121" />
+      <edge source="MXN" target="SEK" id="283" weight="-0.0020375452210815" />
+      <edge source="MXN" target="SGD" id="284" weight="0.0241717655243211" />
+      <edge source="MXN" target="THB" id="285" weight="0.0339998359763587" />
+      <edge source="MXN" target="TRY" id="286" weight="-0.0081838284953188" />
+      <edge source="MXN" target="ZAR" id="287" weight="0.1387296150134899" />
+      <edge source="MYR" target="NOK" id="288" weight="0.0170751051937274" />
+      <edge source="MYR" target="PHP" id="289" weight="0.0447328487660175" />
+      <edge source="MYR" target="RUB" id="290" weight="0.0421942673152931" />
+      <edge source="MYR" target="SEK" id="291" weight="-0.0216135553638129" />
+      <edge source="MYR" target="SGD" id="292" weight="0.1024820968123748" />
+      <edge source="MYR" target="THB" id="293" weight="0.0537012176414479" />
+      <edge source="MYR" target="TRY" id="294" weight="0.0155246464184243" />
+      <edge source="MYR" target="ZAR" id="295" weight="-0.0066082839338196" />
+      <edge source="NOK" target="PHP" id="296" weight="0.0130023351302308" />
+      <edge source="NOK" target="RUB" id="297" weight="0.0722420908405658" />
+      <edge source="NOK" target="SEK" id="298" weight="0.4023226304612607" />
+      <edge source="NOK" target="SGD" id="299" weight="0.0261146705104303" />
+      <edge source="NOK" target="THB" id="300" weight="0.0516961571280444" />
+      <edge source="NOK" target="TRY" id="301" weight="-0.0196729749067709" />
+      <edge source="NOK" target="ZAR" id="302" weight="0.1213220092042446" />
+      <edge source="PHP" target="RUB" id="303" weight="0.0350291878213038" />
+      <edge source="PHP" target="SEK" id="304" weight="-0.0313273262756615" />
+      <edge source="PHP" target="SGD" id="305" weight="0.0755055439663173" />
+      <edge source="PHP" target="THB" id="306" weight="0.0483903914538864" />
+      <edge source="PHP" target="TRY" id="307" weight="0.0254487622720891" />
+      <edge source="PHP" target="ZAR" id="308" weight="-0.00843709280275" />
+      <edge source="RUB" target="SEK" id="309" weight="0.0586627927430859" />
+      <edge source="RUB" target="SGD" id="310" weight="-0.0227649481637965" />
+      <edge source="RUB" target="THB" id="311" weight="-0.0199226196101309" />
+      <edge source="RUB" target="TRY" id="312" weight="0.0925587546490971" />
+      <edge source="RUB" target="ZAR" id="313" weight="0.1026934230631741" />
+      <edge source="SEK" target="SGD" id="314" weight="0.1096855798744029" />
+      <edge source="SEK" target="THB" id="315" weight="0.0056514024920578" />
+      <edge source="SEK" target="TRY" id="316" weight="0.0497039296350174" />
+      <edge source="SEK" target="ZAR" id="317" weight="-0.0262149452272088" />
+      <edge source="SGD" target="THB" id="318" weight="0.1020944531681364" />
+      <edge source="SGD" target="TRY" id="319" weight="0.0494651867795944" />
+      <edge source="SGD" target="ZAR" id="320" weight="0.1080900495292038" />
+      <edge source="THB" target="TRY" id="321" weight="0.003233713505537" />
+      <edge source="THB" target="ZAR" id="322" weight="0.0250946787051119" />
+      <edge source="TRY" target="ZAR" id="323" weight="0.2468663173877022" />
+    </edges>
+  </graph>
+</gexf>
