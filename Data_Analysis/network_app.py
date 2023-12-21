@@ -331,8 +331,8 @@ modify_doc(curdoc())
 bokeh_app = Application(FunctionHandler(modify_doc))
 
 if __name__ == '__main__':
-    server = Server({'/': bokeh_app}, port=5006)
+    port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
+    server = Server({'/': bokeh_app}, port=port)
     server.start()
-
     server.io_loop.add_callback(server.show, "/")
     server.io_loop.start()
