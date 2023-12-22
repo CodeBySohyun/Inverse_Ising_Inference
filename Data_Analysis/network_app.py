@@ -26,7 +26,7 @@ DATA_FILE_PATH = os.path.join(BASE_DIR, 'Results', 'J_matrix.csv')
 
 TITLE = Div(text="""
     <div style="text-align:left;">
-        <span style="font-size:16pt;"><b>Currency Network</b></span><br>
+        <span style="font-size:16pt;"><b>PLM Currency Network</b></span><br>
         <span style="font-size:10pt;">Data range: 2006-05-17 to 2023-10-09</span>
     </div>
     """)
@@ -95,22 +95,19 @@ class CurrencyNetworkApp:
             'weight': self.edges_cds.data['weight']
         }
 
-        print("Setting up layout...")
-        self.setup_layout()
-
     def handle_exceptions(self):
         try:
             self.__init__()
         except Exception as e:
             print(f"Error in CurrencyNetworkApp initialisation: {e}")
 
-    def setup_layout(self):
+    def setup_layout(self, doc):
         plot_layout = column(TITLE, self.plot)
         histograms_layout = column(self.positive_fig, self.negative_fig, self.author_table, sizing_mode="scale_width")
         stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
         controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
         self.main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
-        curdoc().title = "PLM Currency Network"
+        doc.title = "PLM Currency Network"
 
     @staticmethod
     def load_data(file_path):
@@ -340,7 +337,7 @@ class CurrencyNetworkApp:
 
 def modify_doc(doc):
     app = CurrencyNetworkApp()
-    app.setup_layout()
+    app.setup_layout(doc)
     doc.add_root(app.main_layout)
     doc.add_next_tick_callback(app.trigger_initial_update)
 
