@@ -95,18 +95,16 @@ class CurrencyNetworkApp:
                 'end': self.edges_cds.data['end'],
                 'weight': self.edges_cds.data['weight']
             }
+            print("Setting up layout...")
+            plot_layout = column(TITLE, self.plot)
+            histograms_layout = column(self.positive_fig, self.negative_fig, self.author_table, sizing_mode="scale_width")
+            stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
+            controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
+            main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
+            curdoc().add_root(main_layout)
+            curdoc().title = "PLM Currency Network"
         except Exception as e:
             print(f"Error in CurrencyNetworkApp initialisation: {e}")
-
-    def setup_layout(self, doc):
-        print("Setting up layout...")
-        plot_layout = column(TITLE, self.plot)
-        histograms_layout = column(self.positive_fig, self.negative_fig, self.author_table, sizing_mode="scale_width")
-        stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
-        controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
-        main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
-        doc.title = "PLM Currency Network"
-        return main_layout
 
     @staticmethod
     def load_data(file_path):
@@ -335,12 +333,10 @@ class CurrencyNetworkApp:
         return {k: v for k, v in betweenness_dict.items() if v > 0}
 
 def modify_doc(doc):
-    main_layout = app.setup_layout(doc)
-    doc.add_root(main_layout)
     doc.add_next_tick_callback(app.trigger_initial_update)
 
-app = CurrencyNetworkApp()
 bokeh_app = Application(FunctionHandler(modify_doc))
+app = CurrencyNetworkApp()
 
 # Check if running with 'bokeh serve' or not
 if __name__ != '__main__':
