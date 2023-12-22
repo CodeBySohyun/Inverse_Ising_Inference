@@ -63,40 +63,39 @@ class CurrencyNetworkApp:
 
             print("Loading data...")
             self.J, self.G = self.load_data(DATA_FILE_PATH)
-
-            print("Initialising graph components...")
-            self.nodes_cds, self.edges_cds = self.initialise_graph_components(self.G)
-
-            print("Creating plot...")
-            self.plot, self.graph_renderer = self.create_plot(self.nodes_cds, self.edges_cds)
-
-            print("Creating histogram plots...")
-            self.positive_fig, self.negative_fig, self.positive_plot_data_source, \
-            self.negative_plot_data_source, self.positive_threshold_line, \
-            self.negative_threshold_line = create_histogram_plots()
-
-            print("Creating betweenness centrality table...")
-            self.bc_source = ColumnDataSource({'currency': [], 'betweenness': []})
-            self.bc_table = self.create_data_table(self.bc_source)
-
-            print("Creating slider...")
-            self.slider, self.threshold_value_div = self.create_slider(self.update, self.edges_cds, 
-                                                                       self.positive_threshold_line, 
-                                                                       self.negative_threshold_line)
-
-            print("Adding author table...")
-            author_name = "Sohyun Park"
-            website_url = "https://www.linkedin.com/in/sohyuniverse"
-            icon_url = "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
-            self.author_table = add_author_table(author_name, website_url, icon_url)
-
-            self.original_edges_dataset = {
-                'start': self.edges_cds.data['start'],
-                'end': self.edges_cds.data['end'],
-                'weight': self.edges_cds.data['weight']
-            }
+            self.original_edges_dataset = None
         except Exception as e:
             print(f"Error in CurrencyNetworkApp initialisation: {e}")
+
+    def setup_bokeh_models(self):
+        # Create ColumnDataSource for nodes and edges
+        self.nodes_cds, self.edges_cds = self.initialise_graph_components(self.G)
+
+        # Create plot, graph renderer and legend
+        self.plot, self.graph_renderer = self.create_plot(self.nodes_cds, self.edges_cds)
+
+        # Create histogram plots with specified ranges
+        self.positive_fig, self.negative_fig, self.positive_plot_data_source, self.negative_plot_data_source, self.positive_threshold_line, self.negative_threshold_line = create_histogram_plots()
+
+        # Create DataTable to display betweenness centrality
+        self.bc_source = ColumnDataSource({'currency': [], 'betweenness': []})
+        self.bc_table = self.create_data_table(self.bc_source)
+
+        # Setup widgets and layout
+        self.slider, self.threshold_value_div = self.create_slider(self.update, self.edges_cds, self.positive_threshold_line, self.negative_threshold_line)
+
+        # Create a Div for name and LinkedIn icon
+        author_name = "Sohyun Park"
+        website_url = "https://www.linkedin.com/in/sohyuniverse"
+        icon_url = "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
+        self.author_table = add_author_table(author_name, website_url, icon_url)
+
+        # Store the original edges data
+        self.original_edges_dataset = {
+            'start': self.edges_cds.data['start'],
+            'end': self.edges_cds.data['end'],
+            'weight': self.edges_cds.data['weight']
+        }
 
     def setup_layout(self, doc):
         print("Setting up layout...")
@@ -336,12 +335,15 @@ class CurrencyNetworkApp:
 
 def modify_doc(doc):
     app = CurrencyNetworkApp()
+    app.setup_bokeh_models()
     main_layout = app.setup_layout(doc)
     doc.add_root(main_layout)
     doc.add_next_tick_callback(app.trigger_initial_update)
 
-# The entry point for running with 'bokeh serve' or as a standalone script
-def run():
+# Check if running with 'bokeh serve' or not
+if __name__ != '__main__':
+    modify_doc(curdoc())
+else:
     # Running directly, set up server
     bokeh_app = Application(FunctionHandler(modify_doc))
     port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
@@ -351,10 +353,3 @@ def run():
     ]
     server = Server({'/': bokeh_app}, port=port, allow_websocket_origin=allowed_origins)
     server.start()
-    server.run_until_shutdown()
-
-# Check if running with 'bokeh serve' or not
-if __name__ != '__main__':
-    modify_doc(curdoc())
-else:
-    run()
