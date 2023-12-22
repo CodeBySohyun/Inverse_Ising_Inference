@@ -1,3 +1,5 @@
+import signal
+from bokeh.application.handlers import Handler
 from bokeh.server.server import Server
 from bokeh.application import Application
 from bokeh.application.handlers.function import FunctionHandler
@@ -95,16 +97,18 @@ class CurrencyNetworkApp:
                 'end': self.edges_cds.data['end'],
                 'weight': self.edges_cds.data['weight']
             }
-            print("Setting up layout...")
-            plot_layout = column(TITLE, self.plot)
-            histograms_layout = column(self.positive_fig, self.negative_fig, self.author_table, sizing_mode="scale_width")
-            stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
-            controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
-            main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
-            curdoc().add_root(main_layout)
-            curdoc().title = "PLM Currency Network"
         except Exception as e:
             print(f"Error in CurrencyNetworkApp initialisation: {e}")
+
+    def setup_layout(self, doc):
+        print("Setting up layout...")
+        plot_layout = column(TITLE, self.plot)
+        histograms_layout = column(self.positive_fig, self.negative_fig, self.author_table, sizing_mode="scale_width")
+        stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
+        controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
+        main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
+        doc.title = "PLM Currency Network"
+        return main_layout
 
     @staticmethod
     def load_data(file_path):
@@ -332,15 +336,24 @@ class CurrencyNetworkApp:
     def non_zero_betweenness(betweenness_dict):
         return {k: v for k, v in betweenness_dict.items() if v > 0}
 
-def modify_doc(doc):
-    doc.add_next_tick_callback(app.trigger_initial_update)
+class ModifyDocHandler(Handler):
+    def modify_document(self, doc):
+        main_layout = app.setup_layout(doc)
+        doc.add_root(main_layout)
+        doc.add_next_tick_callback(app.trigger_initial_update)
 
-bokeh_app = Application(FunctionHandler(modify_doc))
+def shutdown_server(signum, frame):
+    server.stop()
+
+signal.signal(signal.SIGINT, shutdown_server)
+signal.signal(signal.SIGTERM, shutdown_server)
+
+bokeh_app = Application(ModifyDocHandler())
 app = CurrencyNetworkApp()
 
 # Check if running with 'bokeh serve' or not
 if __name__ != '__main__':
-    modify_doc(curdoc())
+    ModifyDocHandler().modify_document(curdoc())
 else:
     # Running directly, set up server
     port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
@@ -349,5 +362,4 @@ else:
         'currency-network-ffd38c966f8f.herokuapp.com'  # Default Heroku domain
     ]
     server = Server({'/': bokeh_app}, port=port, allow_websocket_origin=allowed_origins)
-    server.start()
-    server.run_until_shutdown()
+    server.run()
