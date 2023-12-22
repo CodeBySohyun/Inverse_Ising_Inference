@@ -14,7 +14,6 @@ from bokeh.transform import transform
 from bokeh.palettes import RdBu as palette
 from collections import defaultdict
 from network_pdf import calculate_couplings_histogram, create_histogram_plots
-from author_credit import add_author_table
 import logging
 import networkx as nx
 import pandas as pd
@@ -23,6 +22,9 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE_PATH = os.path.join(BASE_DIR, 'Results', 'J_matrix.csv')
+author_name = "Sohyun Park"
+website_url = "https://www.linkedin.com/in/sohyuniverse"
+icon_url = "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
 
 TITLE = Div(text="""
     <div style="text-align:left;">
@@ -83,19 +85,6 @@ class CurrencyNetworkApp:
             self.slider, self.threshold_value_div = self.create_slider(self.update, self.edges_cds, 
                                                                        self.positive_threshold_line, 
                                                                        self.negative_threshold_line)
-
-            print("Adding author table...")
-            author_name = "Sohyun Park"
-            website_url = "https://www.linkedin.com/in/sohyuniverse"
-            icon_url = "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
-            self.author_table = add_author_table(author_name, website_url, icon_url)
-
-            print("Setting up layout...")
-            plot_layout = column(TITLE, self.plot)
-            histograms_layout = column(self.positive_fig, self.negative_fig, self.author_table, sizing_mode="scale_width")
-            stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
-            controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
-            self.main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
 
             self.original_edges_dataset = {
                 'start': self.edges_cds.data['start'],
@@ -335,7 +324,33 @@ def modify_doc(doc):
     app = CurrencyNetworkApp()
     doc.title = "PLM Currency Network"
     doc.clear()
-    doc.add_root(app.main_layout)
+
+    # Create a new instance of the Div component
+    print("Adding author table...")
+    author_table = Div(text=f"""
+        <table style="border: 0; padding: 0;">
+            <tr>
+                <td style="padding: 0;">
+                    <a href="{website_url}" target="_blank">
+                        <img src="{icon_url}" style="height: 14pt; width: 14pt; vertical-align: middle;">
+                    </a>
+                </td>
+                <td style="padding: 0; vertical-align: middle;">
+                    <span style="font-size: 12pt;"><b>&nbsp;{author_name}</b></span>
+                </td>
+            </tr>
+        </table>
+        """)
+
+    # Add the new instance of the Div component to the layout
+    print("Setting up layout...")
+    plot_layout = column(TITLE, app.plot)
+    histograms_layout = column(app.positive_fig, app.negative_fig, author_table, sizing_mode="scale_width")
+    stats_layout = row(app.bc_table, histograms_layout, sizing_mode="scale_width")
+    controls_layout = column(app.slider, app.threshold_value_div, stats_layout, sizing_mode="scale_width")
+    main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
+
+    doc.add_root(main_layout)
     doc.add_next_tick_callback(app.trigger_initial_update)
 
 # Check if running with 'bokeh serve' or not
