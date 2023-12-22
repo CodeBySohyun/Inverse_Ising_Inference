@@ -12,7 +12,6 @@ from bokeh.plotting import figure
 from bokeh.layouts import column, row
 from bokeh.transform import transform
 from bokeh.palettes import RdBu as palette
-from typing import Dict, List, Tuple
 from collections import defaultdict
 from network_pdf import calculate_couplings_histogram, create_histogram_plots
 from author_credit import add_author_table
@@ -111,7 +110,7 @@ class CurrencyNetworkApp:
         stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
         controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
         self.main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
-        curdoc().title = "Currency Network"
+        curdoc().title = "PLM Currency Network"
 
     @staticmethod
     def load_data(file_path):
@@ -340,7 +339,6 @@ class CurrencyNetworkApp:
         return {k: v for k, v in betweenness_dict.items() if v > 0}
 
 def modify_doc(doc):
-    print("modify_doc is being called")
     app = CurrencyNetworkApp()
     app.setup_layout()
     doc.add_root(app.main_layout)
