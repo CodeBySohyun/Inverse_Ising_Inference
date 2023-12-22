@@ -1,5 +1,3 @@
-import signal
-from bokeh.application.handlers import Handler
 from bokeh.server.server import Server
 from bokeh.application import Application
 from bokeh.application.handlers.function import FunctionHandler
@@ -107,6 +105,7 @@ class CurrencyNetworkApp:
         stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
         controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
         main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
+        doc.add_root(main_layout)
         doc.title = "PLM Currency Network"
         return main_layout
 
@@ -336,24 +335,16 @@ class CurrencyNetworkApp:
     def non_zero_betweenness(betweenness_dict):
         return {k: v for k, v in betweenness_dict.items() if v > 0}
 
-class ModifyDocHandler(Handler):
-    def modify_document(self, doc):
-        main_layout = app.setup_layout(doc)
-        doc.add_root(main_layout)
-        doc.add_next_tick_callback(app.trigger_initial_update)
+def modify_doc(doc):
+    app.setup_layout(doc)
+    doc.add_next_tick_callback(app.trigger_initial_update)
 
-def shutdown_server(signum, frame):
-    server.stop()
-
-signal.signal(signal.SIGINT, shutdown_server)
-signal.signal(signal.SIGTERM, shutdown_server)
-
-bokeh_app = Application(ModifyDocHandler())
+bokeh_app = Application(FunctionHandler(modify_doc))
 app = CurrencyNetworkApp()
 
 # Check if running with 'bokeh serve' or not
 if __name__ != '__main__':
-    ModifyDocHandler().modify_document(curdoc())
+    modify_doc(curdoc())
 else:
     # Running directly, set up server
     port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
