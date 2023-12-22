@@ -58,46 +58,43 @@ GRAPH_LAYOUT_RANGE = Range1d(-1.1, 1.1)
 
 class CurrencyNetworkApp:
     def __init__(self):
-        print("Initialising CurrencyNetworkApp instance...")
-
-        print("Loading data...")
-        self.J, self.G = self.load_data(DATA_FILE_PATH)
-
-        print("Initialising graph components...")
-        self.nodes_cds, self.edges_cds = self.initialise_graph_components(self.G)
-
-        print("Creating plot...")
-        self.plot, self.graph_renderer = self.create_plot(self.nodes_cds, self.edges_cds)
-
-        print("Creating histogram plots...")
-        self.positive_fig, self.negative_fig, self.positive_plot_data_source, \
-        self.negative_plot_data_source, self.positive_threshold_line, \
-        self.negative_threshold_line = create_histogram_plots()
-
-        print("Creating betweenness centrality table...")
-        self.bc_source = ColumnDataSource({'currency': [], 'betweenness': []})
-        self.bc_table = self.create_data_table(self.bc_source)
-
-        print("Creating slider...")
-        self.slider, self.threshold_value_div = self.create_slider(self.update, self.edges_cds, 
-                                                                   self.positive_threshold_line, 
-                                                                   self.negative_threshold_line)
-
-        print("Adding author table...")
-        author_name = "Sohyun Park"
-        website_url = "https://www.linkedin.com/in/sohyuniverse"
-        icon_url = "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
-        self.author_table = add_author_table(author_name, website_url, icon_url)
-
-        self.original_edges_dataset = {
-            'start': self.edges_cds.data['start'],
-            'end': self.edges_cds.data['end'],
-            'weight': self.edges_cds.data['weight']
-        }
-
-    def handle_exceptions(self):
         try:
-            self.__init__()
+            print("Initialising CurrencyNetworkApp instance...")
+
+            print("Loading data...")
+            self.J, self.G = self.load_data(DATA_FILE_PATH)
+
+            print("Initialising graph components...")
+            self.nodes_cds, self.edges_cds = self.initialise_graph_components(self.G)
+
+            print("Creating plot...")
+            self.plot, self.graph_renderer = self.create_plot(self.nodes_cds, self.edges_cds)
+
+            print("Creating histogram plots...")
+            self.positive_fig, self.negative_fig, self.positive_plot_data_source, \
+            self.negative_plot_data_source, self.positive_threshold_line, \
+            self.negative_threshold_line = create_histogram_plots()
+
+            print("Creating betweenness centrality table...")
+            self.bc_source = ColumnDataSource({'currency': [], 'betweenness': []})
+            self.bc_table = self.create_data_table(self.bc_source)
+
+            print("Creating slider...")
+            self.slider, self.threshold_value_div = self.create_slider(self.update, self.edges_cds, 
+                                                                       self.positive_threshold_line, 
+                                                                       self.negative_threshold_line)
+
+            print("Adding author table...")
+            author_name = "Sohyun Park"
+            website_url = "https://www.linkedin.com/in/sohyuniverse"
+            icon_url = "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
+            self.author_table = add_author_table(author_name, website_url, icon_url)
+
+            self.original_edges_dataset = {
+                'start': self.edges_cds.data['start'],
+                'end': self.edges_cds.data['end'],
+                'weight': self.edges_cds.data['weight']
+            }
         except Exception as e:
             print(f"Error in CurrencyNetworkApp initialisation: {e}")
 
@@ -107,8 +104,9 @@ class CurrencyNetworkApp:
         histograms_layout = column(self.positive_fig, self.negative_fig, self.author_table, sizing_mode="scale_width")
         stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
         controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
-        self.main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
+        main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
         doc.title = "PLM Currency Network"
+        return main_layout
 
     @staticmethod
     def load_data(file_path):
@@ -337,8 +335,8 @@ class CurrencyNetworkApp:
         return {k: v for k, v in betweenness_dict.items() if v > 0}
 
 def modify_doc(doc):
-    app.setup_layout(doc)
-    doc.add_root(app.main_layout)
+    main_layout = app.setup_layout(doc)
+    doc.add_root(main_layout)
     doc.add_next_tick_callback(app.trigger_initial_update)
 
 app = CurrencyNetworkApp()
