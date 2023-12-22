@@ -340,10 +340,8 @@ def modify_doc(doc):
     doc.add_root(main_layout)
     doc.add_next_tick_callback(app.trigger_initial_update)
 
-# Check if running with 'bokeh serve' or not
-if __name__ != '__main__':
-    modify_doc(curdoc())
-else:
+# The entry point for running with 'bokeh serve' or as a standalone script
+def run():
     # Running directly, set up server
     bokeh_app = Application(FunctionHandler(modify_doc))
     port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
@@ -354,3 +352,9 @@ else:
     server = Server({'/': bokeh_app}, port=port, allow_websocket_origin=allowed_origins)
     server.start()
     server.run_until_shutdown()
+
+# Check if running with 'bokeh serve' or not
+if __name__ != '__main__':
+    modify_doc(curdoc())
+else:
+    run()
