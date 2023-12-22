@@ -354,6 +354,7 @@ if __name__ != '__main__':
 else:
     # Running directly, set up server
     port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
-    server = Server({'/': bokeh_app}, port=port)
+    allowed_origins = ['currency-network-ffd38c966f8f.herokuapp.com']
+    server = Server({'/': bokeh_app}, port=port, allow_websocket_origin=allowed_origins)
     server.start()
     server.run_until_shutdown()
