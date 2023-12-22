@@ -105,7 +105,6 @@ class CurrencyNetworkApp:
         stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
         controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
         main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
-        doc.add_root(main_layout)
         doc.title = "PLM Currency Network"
         return main_layout
 
@@ -336,17 +335,17 @@ class CurrencyNetworkApp:
         return {k: v for k, v in betweenness_dict.items() if v > 0}
 
 def modify_doc(doc):
-    app.setup_layout(doc)
+    app = CurrencyNetworkApp()
+    main_layout = app.setup_layout(doc)
+    doc.add_root(main_layout)
     doc.add_next_tick_callback(app.trigger_initial_update)
-
-bokeh_app = Application(FunctionHandler(modify_doc))
-app = CurrencyNetworkApp()
 
 # Check if running with 'bokeh serve' or not
 if __name__ != '__main__':
     modify_doc(curdoc())
 else:
     # Running directly, set up server
+    bokeh_app = Application(FunctionHandler(modify_doc))
     port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
     allowed_origins = [
         'plm-currency-network.com',  # Custom domain
