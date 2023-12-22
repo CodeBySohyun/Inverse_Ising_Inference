@@ -353,8 +353,8 @@ else:
     # Running directly, set up server
     port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
     allowed_origins = [
-        'plm-currency-network.com:443',  # Custom domain
-        'currency-network-ffd38c966f8f.herokuapp.com:443'  # Default Heroku domain
+        'plm-currency-network.com',  # Custom domain
+        'currency-network-ffd38c966f8f.herokuapp.com'  # Default Heroku domain
     ]
     server = Server({'/': bokeh_app}, port=port, allow_websocket_origin=allowed_origins)
     server.start()
