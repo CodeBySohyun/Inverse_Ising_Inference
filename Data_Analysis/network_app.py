@@ -362,4 +362,5 @@ else:
         'currency-network-ffd38c966f8f.herokuapp.com'  # Default Heroku domain
     ]
     server = Server({'/': bokeh_app}, port=port, allow_websocket_origin=allowed_origins)
-    server.run()
+    server.start()
+    server.run_until_shutdown()
