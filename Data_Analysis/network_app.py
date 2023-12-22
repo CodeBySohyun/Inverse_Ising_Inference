@@ -62,7 +62,7 @@ class CurrencyNetworkApp:
         try: 
             print("Loading data...")
             self.J, self.G = self.load_data(DATA_FILE_PATH)
-            print("Initializing graph components...")
+            print("Initialising graph components...")
             self.nodes_cds, self.edges_cds = self.initialise_graph_components(self.G)
             print("Creating plot...")
             self.plot, self.graph_renderer = self.create_plot(self.nodes_cds, self.edges_cds)
@@ -327,10 +327,13 @@ def modify_doc(doc):
     app.setup_layout()
     doc.add_root(app.main_layout)
 
-modify_doc(curdoc())
 bokeh_app = Application(FunctionHandler(modify_doc))
 
-if __name__ == '__main__':
+# Check if running with 'bokeh serve' or not
+if __name__ != '__main__':
+    modify_doc(curdoc())
+else:
+    # Running directly, set up server
     port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
     server = Server({'/': bokeh_app}, port=port)
     server.start()
