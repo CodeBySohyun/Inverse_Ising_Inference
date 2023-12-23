@@ -1,9 +1,10 @@
+import pdb
 from bokeh.server.server import Server
 from bokeh.application import Application
 from bokeh.application.handlers.function import FunctionHandler
 from bokeh.io import curdoc
 from bokeh.models import (
-    Range1d, Circle, MultiLine, HoverTool, BoxZoomTool,
+    Circle, MultiLine, HoverTool, BoxZoomTool,
     ResetTool, LabelSet, StaticLayoutProvider, GraphRenderer,
     ColumnDataSource, Slider, Legend, LegendItem,
     DataTable, TableColumn, Div, LinearColorMapper
@@ -13,25 +14,16 @@ from bokeh.layouts import column, row
 from bokeh.transform import transform
 from bokeh.palettes import RdBu as palette
 from collections import defaultdict
+from author_credit import add_author_table
 from network_pdf import calculate_couplings_histogram, create_histogram_plots
-import logging
 import networkx as nx
 import pandas as pd
 import numpy as np
 import os
+import logging
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE_PATH = os.path.join(BASE_DIR, 'Results', 'J_matrix.csv')
-author_name = "Sohyun Park"
-website_url = "https://www.linkedin.com/in/sohyuniverse"
-icon_url = "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
-
-TITLE = Div(text="""
-    <div style="text-align:left;">
-        <span style="font-size:16pt;"><b>PLM Currency Network</b></span><br>
-        <span style="font-size:10pt;">Data range: 2006-05-17 to 2023-10-09</span>
-    </div>
-    """)
 
 TOOLTIP_TEMPLATE = """
 <div>
@@ -56,43 +48,27 @@ FREE_TRADE_AREAS = {
     'Others': ['AUD', 'GBP', 'JPY', 'NZD', 'CHF', 'CNY', 'RUB', 'TRY', 'ZAR', 'HKD', 'HUF', 'ILS', 'INR', 'KRW']  # Other currencies
 }
 
-GRAPH_LAYOUT_RANGE = Range1d(-1.1, 1.1)
-
 class CurrencyNetworkApp:
     def __init__(self):
-        try:
-            print("Initialising CurrencyNetworkApp instance...")
-
-            print("Loading data...")
-            self.J, self.G = self.load_data(DATA_FILE_PATH)
-
-            print("Initialising graph components...")
-            self.nodes_cds, self.edges_cds = self.initialise_graph_components(self.G)
-
-            print("Creating plot...")
-            self.plot, self.graph_renderer = self.create_plot(self.nodes_cds, self.edges_cds)
-
-            print("Creating histogram plots...")
-            self.positive_fig, self.negative_fig, self.positive_plot_data_source, \
-            self.negative_plot_data_source, self.positive_threshold_line, \
-            self.negative_threshold_line = create_histogram_plots()
-
-            print("Creating betweenness centrality table...")
-            self.bc_source = ColumnDataSource({'currency': [], 'betweenness': []})
-            self.bc_table = self.create_data_table(self.bc_source)
-
-            print("Creating slider...")
-            self.slider, self.threshold_value_div = self.create_slider(self.update, self.edges_cds, 
-                                                                       self.positive_threshold_line, 
-                                                                       self.negative_threshold_line)
-
-            self.original_edges_dataset = {
-                'start': self.edges_cds.data['start'],
-                'end': self.edges_cds.data['end'],
-                'weight': self.edges_cds.data['weight']
-            }
-        except Exception as e:
-            print(f"Error in CurrencyNetworkApp initialisation: {e}")
+        self.J = None
+        self.G = None
+        self.nodes_cds = None
+        self.edges_cds = None
+        self.plot = None
+        self.graph_renderer = None
+        self.positive_fig = None
+        self.negative_fig = None
+        self.positive_plot_data_source = None
+        self.negative_plot_data_source = None
+        self.positive_threshold_line = None
+        self.negative_threshold_line = None
+        self.bc_source = None
+        self.bc_table = None
+        self.slider = None
+        self.threshold_value_div = None
+        self.author_table = None
+        self.main_layout = None
+        self.original_edges_dataset = None
 
     @staticmethod
     def load_data(file_path):
@@ -137,37 +113,33 @@ class CurrencyNetworkApp:
         node_colors.update({node: COLORS[area] for area, nodes in FREE_TRADE_AREAS.items() for node in nodes})
         return node_colors
 
-    def create_plot(self, nodes_cds, edges_cds):
-        try:
-            plot = figure(
-                x_range=GRAPH_LAYOUT_RANGE, y_range=GRAPH_LAYOUT_RANGE,
-                width=660, height=660, tools="", x_axis_type=None, y_axis_type=None
-            )
-            plot.toolbar.logo = None
-            
-            graph_renderer = GraphRenderer()
-            graph_renderer.node_renderer.data_source = nodes_cds
-            graph_renderer.node_renderer.glyph = Circle(size=10, fill_color="color")
-            graph_renderer.layout_provider = StaticLayoutProvider(graph_layout=dict(zip(nodes_cds.data['index'], zip(nodes_cds.data['x'], nodes_cds.data['y']))))
+    def create_plot(self):
+        plot = figure(
+            x_range=(-1.1, 1.1), y_range=(-1.1, 1.1),
+            width=660, height=660, tools="", x_axis_type=None, y_axis_type=None
+        )
+        plot.toolbar.logo = None
+        
+        graph_renderer = GraphRenderer()
+        graph_renderer.node_renderer.data_source = self.nodes_cds
+        graph_renderer.node_renderer.glyph = Circle(size=10, fill_color="color")
+        graph_renderer.layout_provider = StaticLayoutProvider(graph_layout=dict(zip(self.nodes_cds.data['index'], zip(self.nodes_cds.data['x'], self.nodes_cds.data['y']))))
 
-            custom_palette = [palette[11][1], palette[11][-2]]
-            weights = edges_cds.data['weight']
-            graph_renderer.edge_renderer.data_source = edges_cds
-            color_mapper = LinearColorMapper(palette=custom_palette, low=-max(weights), high=max(weights))
-            graph_renderer.edge_renderer.glyph = MultiLine(line_color=transform('weight', color_mapper), line_alpha=0.5, line_width=1)
-            
-            hover_tool = HoverTool(renderers=[graph_renderer.node_renderer], tooltips=TOOLTIP_TEMPLATE)
-            plot.add_tools(hover_tool, BoxZoomTool(), ResetTool())
-            labels = LabelSet(x='x', y='y', text='name', source=nodes_cds, text_font_size="10pt", text_color="black")
-            plot.add_layout(labels)
+        custom_palette = [palette[11][1], palette[11][-2]]
+        weights = self.edges_cds.data['weight']
+        graph_renderer.edge_renderer.data_source = self.edges_cds
+        color_mapper = LinearColorMapper(palette=custom_palette, low=-max(weights), high=max(weights))
+        graph_renderer.edge_renderer.glyph = MultiLine(line_color=transform('weight', color_mapper), line_alpha=0.5, line_width=1)
+        
+        hover_tool = HoverTool(renderers=[graph_renderer.node_renderer], tooltips=TOOLTIP_TEMPLATE)
+        plot.add_tools(hover_tool, BoxZoomTool(), ResetTool())
+        labels = LabelSet(x='x', y='y', text='name', source=self.nodes_cds, text_font_size="10pt", text_color="black")
+        plot.add_layout(labels)
 
-            plot.renderers.append(graph_renderer)
-            legend = self.create_legend(plot)
-            plot.add_layout(legend, 'below')
-            return plot, graph_renderer
-        except Exception as e:
-            logging.error(f'Error occurred: {e}')
-            # Handle the error or exception here
+        plot.renderers.append(graph_renderer)
+        legend = self.create_legend(plot)
+        plot.add_layout(legend, 'below')
+        return plot, graph_renderer
 
     @staticmethod
     def create_legend(plot):
@@ -183,31 +155,30 @@ class CurrencyNetworkApp:
         legend.label_text_color = "navy"
         return legend
     
-    @staticmethod
-    def create_data_table(source, width=200, height=680):
+    def create_data_table(self):
         columns = [
             TableColumn(field="index_1_based", title="#", width=50),
             TableColumn(field="currency", title="Currency"),
             TableColumn(field="betweenness", title="Betweenness"),
         ]
-        data_table = DataTable(source=source, columns=columns, width=width, height=height, index_position=None)
+        data_table = DataTable(source=self.bc_source, columns=columns, width=200, height=680, index_position=None)
         return column(Div(text="<b>Betweenness Centrality</b>"), data_table)
 
-    def create_slider(self, update_callback, edges_cds, positive_threshold_line, negative_threshold_line, epsilon=1e-10, step=0.01, title="Threshold"):
-        weights = np.array(edges_cds.data['weight'])
+    def create_slider(self, epsilon=1e-10, step=0.01):
+        weights = np.array(self.edges_cds.data['weight'])
         mapping_func = self.generate_nonlinear_mapping(weights)
         initial_value = mapping_func(0)
-        slider = Slider(start=epsilon, end=1-epsilon, value=epsilon, step=step, title=title)
+        slider = Slider(start=epsilon, end=1-epsilon, value=epsilon, step=step, title="Threshold")
         threshold_value_div = Div(text=f"Absolute Threshold Value: {initial_value}")
 
-        def new_update_callback(attr, old, new):
+        def update_callback(attr, old, new):
             mapped_value = mapping_func(new)
             threshold_value_div.text = f"Absolute Threshold Value: {mapped_value}"
-            update_callback(attr, old, mapped_value)
-            positive_threshold_line.location = mapped_value
-            negative_threshold_line.location = mapped_value
+            self.update(attr, old, mapped_value)
+            self.positive_threshold_line.location = mapped_value
+            self.negative_threshold_line.location = mapped_value
 
-        slider.on_change('value', new_update_callback)
+        slider.on_change('value', update_callback)
         return slider, threshold_value_div
 
     @staticmethod
@@ -223,6 +194,19 @@ class CurrencyNetworkApp:
             return weight_val
 
         return mapping_func
+
+    def setup_layout(self):
+        TITLE = Div(text="""
+        <div style="text-align:left;">
+            <span style="font-size:16pt;"><b>PLM Currency Network</b></span><br>
+            <span style="font-size:10pt;">Data range: 2006-05-17 to 2023-10-09</span>
+        </div>
+        """)
+        plot_layout = column(TITLE, self.plot)
+        histograms_layout = column(self.positive_fig, self.negative_fig, self.author_table, sizing_mode="scale_width")
+        stats_layout = row(self.bc_table, histograms_layout, sizing_mode="scale_width")
+        controls_layout = column(self.slider, self.threshold_value_div, stats_layout, sizing_mode="scale_width")
+        return row(plot_layout, controls_layout, sizing_mode="scale_width")
 
     def update(self, attr, old, new):
         threshold = new
@@ -245,7 +229,7 @@ class CurrencyNetworkApp:
 
         # Check if new_positions is empty and handle accordingly
         if not new_positions:
-            print("Debug: new_positions is empty. Handling accordingly.")
+            logging.info("Debug: new_positions is empty. Handling accordingly.")
             # Handling empty new_positions
             # For example, setting default positions or skipping updates that rely on new_positions
             return
@@ -320,38 +304,53 @@ class CurrencyNetworkApp:
     def trigger_initial_update(self):
         self.update('value', self.slider.value, self.slider.value)
 
+logging.basicConfig(level=logging.INFO)
+
 def modify_doc(doc):
-    app = CurrencyNetworkApp()
-    doc.title = "PLM Currency Network"
-    doc.clear()
+    try:
+        logging.info("Initialising CurrencyNetworkApp instance...")
+        app = CurrencyNetworkApp()
 
-    # Create a new instance of the Div component
-    print("Adding author table...")
-    author_table = Div(text=f"""
-        <table style="border: 0; padding: 0;">
-            <tr>
-                <td style="padding: 0;">
-                    <a href="{website_url}" target="_blank">
-                        <img src="{icon_url}" style="height: 14pt; width: 14pt; vertical-align: middle;">
-                    </a>
-                </td>
-                <td style="padding: 0; vertical-align: middle;">
-                    <span style="font-size: 12pt;"><b>&nbsp;{author_name}</b></span>
-                </td>
-            </tr>
-        </table>
-        """)
+        logging.info("Loading data...")
+        app.J, app.G = app.load_data(DATA_FILE_PATH)
 
-    # Add the new instance of the Div component to the layout
-    print("Setting up layout...")
-    plot_layout = column(TITLE, app.plot)
-    histograms_layout = column(app.positive_fig, app.negative_fig, author_table, sizing_mode="scale_width")
-    stats_layout = row(app.bc_table, histograms_layout, sizing_mode="scale_width")
-    controls_layout = column(app.slider, app.threshold_value_div, stats_layout, sizing_mode="scale_width")
-    main_layout = row(plot_layout, controls_layout, sizing_mode="scale_width")
+        logging.info("Initialising graph components...")
+        app.nodes_cds, app.edges_cds = app.initialise_graph_components(app.G)
 
-    doc.add_root(main_layout)
-    doc.add_next_tick_callback(app.trigger_initial_update)
+        logging.info("Creating plot...")
+        app.plot, app.graph_renderer = app.create_plot()
+
+        logging.info("Creating histogram plots...")
+        app.positive_fig, app.negative_fig, app.positive_plot_data_source, \
+        app.negative_plot_data_source, app.positive_threshold_line, \
+        app.negative_threshold_line = create_histogram_plots()
+
+        logging.info("Creating betweenness centrality table...")
+        app.bc_source = ColumnDataSource({'currency': [], 'betweenness': []})
+        app.bc_table = app.create_data_table()
+
+        logging.info("Creating slider...")
+        app.slider, app.threshold_value_div = app.create_slider()
+
+        logging.info("Adding author table...")
+        app.author_table = add_author_table("Sohyun Park", "https://www.linkedin.com/in/sohyuniverse", "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png")
+
+        logging.info("Setting up layout...")
+        app.main_layout = app.setup_layout()
+
+        app.original_edges_dataset = {
+            'start': app.edges_cds.data['start'],
+            'end': app.edges_cds.data['end'],
+            'weight': app.edges_cds.data['weight']
+        }
+
+        doc.title = "PLM Currency Network"
+        doc.remove_root(app.main_layout)
+        doc.add_root(app.main_layout)
+        doc.add_next_tick_callback(app.trigger_initial_update)
+    except Exception as e:
+        logging.error(f"An error occurred: {str(e)}")
+        # Handle the error gracefully, e.g. display an error message to the user.
 
 # Check if running with 'bokeh serve' or not
 if __name__ != '__main__':
