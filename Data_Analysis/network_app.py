@@ -1,4 +1,3 @@
-import pdb
 from bokeh.server.server import Server
 from bokeh.application import Application
 from bokeh.application.handlers.function import FunctionHandler
@@ -14,6 +13,7 @@ from bokeh.layouts import column, row
 from bokeh.transform import transform
 from bokeh.palettes import RdBu as palette
 from collections import defaultdict
+from decouple import config
 from author_credit import add_author_table
 from network_pdf import calculate_couplings_histogram, create_histogram_plots
 import networkx as nx
@@ -304,40 +304,21 @@ class CurrencyNetworkApp:
     def trigger_initial_update(self):
         self.update('value', self.slider.value, self.slider.value)
 
-logging.basicConfig(level=logging.INFO)
-
 def modify_doc(doc):
     try:
-        logging.info("Initialising CurrencyNetworkApp instance...")
         app = CurrencyNetworkApp()
 
-        logging.info("Loading data...")
         app.J, app.G = app.load_data(DATA_FILE_PATH)
-
-        logging.info("Initialising graph components...")
         app.nodes_cds, app.edges_cds = app.initialise_graph_components(app.G)
-
-        logging.info("Creating plot...")
         app.plot, app.graph_renderer = app.create_plot()
-
-        logging.info("Creating histogram plots...")
         app.positive_fig, app.negative_fig, app.positive_plot_data_source, \
         app.negative_plot_data_source, app.positive_threshold_line, \
         app.negative_threshold_line = create_histogram_plots()
-
-        logging.info("Creating betweenness centrality table...")
         app.bc_source = ColumnDataSource({'currency': [], 'betweenness': []})
         app.bc_table = app.create_data_table()
-
-        logging.info("Creating slider...")
         app.slider, app.threshold_value_div = app.create_slider()
-
-        logging.info("Adding author table...")
         app.author_table = add_author_table("Sohyun Park", "https://www.linkedin.com/in/sohyuniverse", "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png")
-
-        logging.info("Setting up layout...")
         app.main_layout = app.setup_layout()
-
         app.original_edges_dataset = {
             'start': app.edges_cds.data['start'],
             'end': app.edges_cds.data['end'],
@@ -350,19 +331,22 @@ def modify_doc(doc):
         doc.add_next_tick_callback(app.trigger_initial_update)
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
-        # Handle the error gracefully, e.g. display an error message to the user.
+        raise e
+
+def run_server():
+    bokeh_app = Application(FunctionHandler(modify_doc))
+    port = int(config('PORT', default=5006))  # Default to 5006 if PORT not set
+    allowed_origins = [
+        'plm-currency-network.com',  # Custom domain
+        'currency-network-ffd38c966f8f.herokuapp.com'  # Default Heroku domain
+        'currency-network-ffd38c966f8f.autoidleapp.com'  # Default AutoIdle domain
+    ]
+    server = Server({'/': bokeh_app}, port=port, allow_websocket_origin=allowed_origins)
+    server.start()
+    server.run_until_shutdown()
 
 # Check if running with 'bokeh serve' or not
 if __name__ != '__main__':
     modify_doc(curdoc())
 else:
-    # Running directly, set up server
-    bokeh_app = Application(FunctionHandler(modify_doc))
-    port = int(os.environ.get('PORT', 5006))  # Default to 5006 if $PORT not set
-    allowed_origins = [
-        'plm-currency-network.com',  # Custom domain
-        'currency-network-ffd38c966f8f.herokuapp.com'  # Default Heroku domain
-    ]
-    server = Server({'/': bokeh_app}, port=port, allow_websocket_origin=allowed_origins)
-    server.start()
-    server.run_until_shutdown()
+    run_server()
