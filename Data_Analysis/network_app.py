@@ -14,13 +14,16 @@ from bokeh.transform import transform
 from bokeh.palettes import RdBu as palette
 from collections import defaultdict
 from decouple import config
-from author_credit import add_author_table
-from network_pdf import calculate_couplings_histogram, create_histogram_plots
+from Utility.author_credit import add_author_table
+from Utility.network_pdf import calculate_couplings_histogram, create_histogram_plots
 import networkx as nx
 import pandas as pd
 import numpy as np
 import os
 import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE_PATH = os.path.join(BASE_DIR, 'Results', 'J_matrix.csv')
@@ -229,7 +232,7 @@ class CurrencyNetworkApp:
 
         # Check if new_positions is empty and handle accordingly
         if not new_positions:
-            logging.info("Debug: new_positions is empty. Handling accordingly.")
+            logging.debug("new_positions is empty. Handling accordingly.")
             # Handling empty new_positions
             # For example, setting default positions or skipping updates that rely on new_positions
             return
@@ -338,7 +341,7 @@ def run_server():
     port = int(config('PORT', default=5006))  # Default to 5006 if PORT not set
     allowed_origins = [
         'plm-currency-network.com',  # Custom domain
-        'currency-network-ffd38c966f8f.herokuapp.com',  # Default Heroku domain
+        'currency-network-ffd38c966f8f.herokuapp.com'  # Default Heroku domain
         'currency-network-ffd38c966f8f.autoidleapp.com'  # Default AutoIdle domain
     ]
     server = Server({'/': bokeh_app}, port=port, allow_websocket_origin=allowed_origins)
