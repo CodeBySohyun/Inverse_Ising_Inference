@@ -5,7 +5,7 @@ def timer(func):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        print(f"Execution time: {end_time - start_time} seconds")
+        print(f"'{func.__name__}' execution time: {end_time - start_time:.6f} seconds")
         return result
     return wrapper
 

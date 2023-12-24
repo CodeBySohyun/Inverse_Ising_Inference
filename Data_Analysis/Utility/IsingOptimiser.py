@@ -48,19 +48,18 @@ class IsingOptimiser:
         grad_h = np.zeros_like(h)  # Initialise the gradient of h
 
         # Vectorised version
-        J_diag = np.diag(J).reshape(-1, 1)  # Reshape to (d, 1)
-        S_ij = np.dot(J, X.T) - J_diag * X.T + h.reshape(-1, 1)  # Broadcasting with correct shapes
-        S_ij = S_ij.T  # Transpose to match the shape of X
-        log_likelihood = np.einsum('ij,ij->', X, S_ij) - np.log(2 * np.cosh(S_ij)).sum()
+        J_diag = np.diag(J)  # Get the diagonal of J
+        S_ij = X @ J - X * J_diag + h  # Compute S_ij vectorized, broadcasting h
+        log_likelihood = (X * S_ij).sum() - np.sum(np.log(2 * np.cosh(S_ij)))
 
         tanh_S_ij = np.tanh(S_ij)
         grad_h = np.sum(X - tanh_S_ij, axis=0)
 
-        mask = np.ones((d, d), dtype=bool)
-        np.fill_diagonal(mask, False)
-        grad_J = np.einsum('ij,ik->jk', X - tanh_S_ij, X, optimize=True)
-        grad_J = grad_J * mask  # Apply the mask
-        grad_J = (grad_J + grad_J.T) / 2  # Symmetrise the gradient
+        # Compute the gradient for J, excluding the diagonal
+        # Create a mask to zero out diagonal contributions in the grad_J calculation
+        mask = np.ones_like(J) - np.eye(d)
+        grad_J = ((X - tanh_S_ij).T @ X) * mask
+        grad_J = (grad_J + grad_J.T)
 
         # Return the negative likelihood and gradients for minimisation
         return -log_likelihood, -grad_J, -grad_h
@@ -141,8 +140,13 @@ class IsingOptimiser:
     @timer
     def optimise_all_subsets(self):
         print("Optimising initial subsets...\n")
-        J_initial = {key: np.random.rand(len(indices), len(indices)) for key, indices in self.subsets_indices.items()}
-        h_initial = {key: np.random.rand(len(indices)) for key, indices in self.subsets_indices.items()}
+        J_initial = {key: np.random.uniform(-1, 1, (len(indices), len(indices)))
+                        for key, indices in self.subsets_indices.items()}
+        for key, matrix in J_initial.items():
+            upper_tri = np.triu(matrix, k=1)  # Extract upper triangular part with k=1 to exclude the diagonal
+            J_initial[key] = upper_tri + upper_tri.T  # Make the matrix symmetric with zeros on the diagonal
+        h_initial = {key: np.random.uniform(-1, 1, len(indices))
+                        for key, indices in self.subsets_indices.items()}
         optimised_results = {}
         for index, (key, data_subset) in enumerate(self.data_subsets.items(), 1):
             J_opt, h_opt, success = self._optimise_subset(data_subset, J_initial[key], h_initial[key], index)
