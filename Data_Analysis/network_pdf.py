@@ -76,7 +76,7 @@ def create_histogram_plots():
       where positive_fig and negative_fig are the Bokeh figure objects for the histograms,
       and positive_source and negative_source are the ColumnDataSources for the plots.
     """
-    # Initialize empty data sources for the histograms
+    # Initialise empty data sources for the histograms
     positive_source = ColumnDataSource(data=dict(bin_edges=[], histogram=[]))
     negative_source = ColumnDataSource(data=dict(bin_edges=[], histogram=[]))
 
