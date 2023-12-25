@@ -22,7 +22,7 @@ def exception_handler(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            print(f"An exception occurred: {str(e)}")
+            print(f"An exception occurred in function {func.__name__}: {str(e)}")
             # Optionally perform additional error handling or logging
     return wrapper
 

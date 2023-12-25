@@ -43,9 +43,7 @@ class IsingOptimiser:
         Calculate the log-pseudo-likelihood for the Ising model and its gradients.
         """
         d = X.shape[1]  # Number of dimensions
-        log_likelihood = 0
-        grad_J = np.zeros_like(J)  # Initialise the gradient of J
-        grad_h = np.zeros_like(h)  # Initialise the gradient of h
+        log_likelihood, grad_J, grad_h = 0, np.zeros_like(J), np.zeros_like(h)
 
         # Vectorised version
         J_diag = np.diag(J)  # Get the diagonal of J
@@ -110,7 +108,6 @@ class IsingOptimiser:
         J = np.zeros((N, N))
         J[np.triu_indices(N, k=1)] = J_upper_tri
         J += J.T  # Symmetrise the J matrix
-        np.fill_diagonal(J, 0)  # Set the diagonal of the J matrix to 0
 
         return J, h
 
