@@ -82,7 +82,7 @@ class CurrencyNetworkApp:
         return df, G
 
     def initialise_graph_components(self, G):
-        positions = nx.spring_layout(G)
+        positions = nx.spring_layout(G, seed=42)
         nodes = list(G.nodes())
         node_indices = list(range(len(nodes)))
         _, betweenness_values = self.calculate_betweenness_centrality(G, nodes)
@@ -228,14 +228,7 @@ class CurrencyNetworkApp:
         sub_G = new_G.subgraph(largest_cc).copy()
 
         # Recalculate node positions based on the filtered graph
-        new_positions = self.calculate_positions(sub_G, threshold, self.nodes_cds.data['name'])
-
-        # Check if new_positions is empty and handle accordingly
-        if not new_positions:
-            logging.debug("new_positions is empty. Handling accordingly.")
-            # Handling empty new_positions
-            # For example, setting default positions or skipping updates that rely on new_positions
-            return
+        new_positions = self.calculate_positions(sub_G, threshold)
 
         # Recalculate node weights based on the filtered graph
         new_weights = self.update_node_weights(sub_G, largest_cc)
@@ -267,13 +260,14 @@ class CurrencyNetworkApp:
         self.negative_plot_data_source.data.update(new_negative_source.data)
 
     @staticmethod
-    def calculate_positions(G, weight_threshold, all_nodes):
-        edges_to_keep = [(u, v) for u, v, d in G.edges(data=True) if d['weight'] > weight_threshold]
+    def calculate_positions(G, weight_threshold):
+        edges_to_keep = [(u, v) for u, v, d in G.edges(data=True) if abs(d['weight']) > weight_threshold]
         filtered_graph = G.edge_subgraph(edges_to_keep).copy()
-        positions = nx.spring_layout(filtered_graph, seed=42)
-        for node in all_nodes:
-            if node not in positions:
-                positions[node] = (0, 0)
+        # Set the absolute value of the weights
+        for u, v, data in filtered_graph.edges(data=True):
+            data['weight'] = abs(data['weight'])
+
+        positions = nx.spring_layout(filtered_graph, weight='weight', seed=42)
         return positions
 
     def update_node_weights(self, G, largest_cc):
@@ -340,6 +334,7 @@ def run_server():
     bokeh_app = Application(FunctionHandler(modify_doc))
     port = int(config('PORT', default=5006))  # Default to 5006 if PORT not set
     allowed_origins = [
+        'localhost:5006',
         'plm-currency-network.com',  # Custom domain
         'currency-network-ffd38c966f8f.herokuapp.com',  # Default Heroku domain
         'currency-network-ffd38c966f8f.autoidleapp.com'  # Default AutoIdle domain

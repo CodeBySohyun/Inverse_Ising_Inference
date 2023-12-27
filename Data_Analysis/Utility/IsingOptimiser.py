@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
-from Utility.decorators import timer, exception_handler, debug
+from Utility.decorators import timer, exception_handler
 
 class IsingOptimiser:
     def __init__(self, data_path):
@@ -35,7 +35,7 @@ class IsingOptimiser:
 
         # Print information about how the currencies have been divided into subsets
         for key, indices in self.subsets_indices.items():
-            print(f"{key}: Currencies {indices[0]} to {indices[-1]}")
+            print(f"{key}: Currencies {indices[0] + 1} to {indices[-1] + 1}")
 
     @staticmethod
     def _log_pseudolikelihood_and_gradients(J, h, X):
@@ -58,7 +58,8 @@ class IsingOptimiser:
         mask = np.ones_like(J) - np.eye(d)
         grad_J = ((X - tanh_S_ij).T @ X) * mask
         grad_J = (grad_J + grad_J.T)
-
+        
+        # print(f"-log_likelihood: {-log_likelihood}")
         # Return the negative likelihood and gradients for minimisation
         return -log_likelihood, -grad_J, -grad_h
 
@@ -71,42 +72,42 @@ class IsingOptimiser:
         Args:
         subset_index (int): Index of the subset being optimised.
         """
-        N = J_subset.shape[0]  # Number of spins (currencies)
+        d = J_subset.shape[0]  # Number of spins (currencies)
 
         # Flatten the J matrix and h vector for the optimisation
-        x0 = np.concatenate([J_subset[np.triu_indices(N, k=1)], h_subset])
+        x0 = np.concatenate([J_subset[np.triu_indices(d, k=1)], h_subset])
 
         def objective_function(x):
             # Construct the symmetric J matrix and calculate the likelihood and gradients
-            J, h = self._reconstruct_J_and_h(x, N)
+            J, h = self._reconstruct_J_and_h(x, d)
             likelihood, grad_J, grad_h = self._log_pseudolikelihood_and_gradients(J, h, data_subset)
             # Combine and return the likelihood and flattened gradients
-            return likelihood, np.concatenate([grad_J[np.triu_indices(N, k=1)], grad_h])
+            return likelihood, np.concatenate([grad_J[np.triu_indices(d, k=1)], grad_h])
         
         # Execute the optimisation using the objective function and initial guesses
         res = minimize(objective_function, x0, method='L-BFGS-B', jac=True)
 
         # Reconstruct the optimised J matrix and h vector from the optimisation result
-        J_optimised, h_optimised = self._reconstruct_J_and_h(res.x, N)
+        J_optimised, h_optimised = self._reconstruct_J_and_h(res.x, d)
 
         # Print the optimisation results for the subset
-        print(f"Optimised J matrix for subset {subset_index}: \n{J_optimised}")
-        print(f"Optimised h vector for subset {subset_index}: \n{h_optimised}")
+        # print(f"Optimised J matrix for subset {subset_index}: \n{J_optimised}")
+        # print(f"Optimised h vector for subset {subset_index}: \n{h_optimised}")
         print(f"Optimisation successful for subset {subset_index}: {res.success}")
 
         return J_optimised, h_optimised, res.success
 
     @staticmethod
-    def _reconstruct_J_and_h(flattened_array, N):
+    def _reconstruct_J_and_h(flattened_array, d):
         """
         Helper function to reconstruct the symmetric J matrix and h vector from a flattened array.
         """
-        J_upper_tri = flattened_array[:N * (N - 1) // 2]
-        h = flattened_array[N * (N - 1) // 2:]
+        J_upper_tri = flattened_array[:d * (d - 1) // 2]
+        h = flattened_array[d * (d - 1) // 2:]
 
         # Construct the symmetric J matrix from the upper triangular part
-        J = np.zeros((N, N))
-        J[np.triu_indices(N, k=1)] = J_upper_tri
+        J = np.zeros((d, d))
+        J[np.triu_indices(d, k=1)] = J_upper_tri
         J += J.T  # Symmetrise the J matrix
 
         return J, h
