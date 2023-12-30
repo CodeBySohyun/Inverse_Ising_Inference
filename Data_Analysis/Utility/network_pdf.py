@@ -84,7 +84,7 @@ def plot_power_law_pdf(data):
     x = np.linspace(min(data), max(data), 1000)
     y_fit = power_law_func(x, *params)
 
-    return x, y_fit
+    return x, y_fit, params
 
 def create_histogram_plots(J_df):
     """
@@ -100,18 +100,20 @@ def create_histogram_plots(J_df):
     positive_source, negative_source, positive_couplings, negative_couplings = calculate_couplings_histogram(J_df)
 
     # Generate a fitted line for positive couplings
-    fitted_positive_x, fitted_positive_y = plot_power_law_pdf(positive_couplings)
+    fitted_positive_x, fitted_positive_y, positive_params = plot_power_law_pdf(positive_couplings)
 
     # Generate a fitted line for negative couplings
-    fitted_negative_x, fitted_negative_y = plot_power_law_pdf(negative_couplings)
+    fitted_negative_x, fitted_negative_y, negative_params = plot_power_law_pdf(negative_couplings)
 
     # Create the figure for the positive couplings histogram
     positive_fig = figure(title="Positive Couplings", tools=[],
                           x_axis_type="log", y_axis_type="log", sizing_mode="stretch_width",
                           height=300, max_width=400)
     positive_fig.y_range.end = max(positive_source.data['histogram']) * 1.5
-    positive_fig.circle(x='bin_edges', y='histogram', size=5, color=palette[11][-2], source=positive_source, legend_label="Data (PDF)")
-    positive_fig.line(fitted_positive_x, fitted_positive_y, line_width=2, color=palette[11][-1], legend_label="Fitted Power Law")
+    positive_fig.circle(x='bin_edges', y='histogram', size=5, color=palette[11][-2], 
+                        source=positive_source, legend_label="Data (PDF)")
+    positive_fig.line(fitted_positive_x, fitted_positive_y, line_width=2, color=palette[11][-1], 
+                      legend_label=f"Fitted Power Law (a={positive_params[0]:.2f}, b={positive_params[1]:.2f})")
     positive_fig.xaxis.axis_label = r"$$J_{ij}$$"
     # positive_fig.yaxis.axis_label = "pdf"
     positive_fig.xaxis.axis_label_text_font_size = '10pt'
@@ -121,7 +123,7 @@ def create_histogram_plots(J_df):
     positive_fig.toolbar_location = None
 
     # Customising and positioning the legend inside the plot
-    positive_fig.legend.location = "top_right"
+    positive_fig.legend.location = "bottom_left"
     positive_fig.legend.label_text_font_size = '8pt'  # Adjusting the font size
     positive_fig.legend.background_fill_alpha = 0.5  # Setting background transparency
     positive_fig.legend.background_fill_color = 'white'  # Setting background color
@@ -131,8 +133,10 @@ def create_histogram_plots(J_df):
                           x_axis_type="log", y_axis_type="log", sizing_mode="stretch_width",
                           height=300, max_width=400)
     negative_fig.y_range.end = max(negative_source.data['histogram']) * 1.5
-    negative_fig.circle(x='bin_edges', y='histogram', size=5, color=palette[11][1], source=negative_source, legend_label="Data (PDF)")
-    negative_fig.line(fitted_negative_x, fitted_negative_y, line_width=2, color=palette[11][0], legend_label="Fitted Power Law")
+    negative_fig.circle(x='bin_edges', y='histogram', size=5, color=palette[11][1], 
+                        source=negative_source, legend_label="Data (PDF)")
+    negative_fig.line(fitted_negative_x, fitted_negative_y, line_width=2, color=palette[11][0], 
+                      legend_label=f"Fitted Power Law (a={negative_params[0]:.2f}, b={negative_params[1]:.2f})")
     negative_fig.xaxis.axis_label = r"$$-J_{ij}$$"
     # negative_fig.yaxis.axis_label = "pdf"
     negative_fig.xaxis.axis_label_text_font_size = '10pt'
@@ -142,7 +146,7 @@ def create_histogram_plots(J_df):
     negative_fig.toolbar_location = None
 
     # Customising and positioning the legend inside the plot
-    negative_fig.legend.location = "top_right"
+    negative_fig.legend.location = "bottom_left"
     negative_fig.legend.label_text_font_size = '8pt'  # Adjusting the font size
     negative_fig.legend.background_fill_alpha = 0.5  # Setting background transparency
     negative_fig.legend.background_fill_color = 'white'  # Setting background color
