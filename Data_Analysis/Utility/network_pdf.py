@@ -1,6 +1,7 @@
-from bokeh.models import ColumnDataSource, Span, Legend
+from bokeh.models import ColumnDataSource, Span
 from bokeh.plotting import figure
 from bokeh.palettes import RdBu as palette
+from scipy.optimize import curve_fit
 import numpy as np
 
 # Let's define a function that takes in the J matrix and returns the data sources
@@ -40,10 +41,10 @@ def calculate_couplings_histogram(J_df):
     negative_bin_edges = negative_bins[:-1]
     
     # Create ColumnDataSources for positive and negative histograms
-    positive_source = ColumnDataSource(data=dict(couplings=positive_couplings, bins=positive_bins, histogram=positive_histogram, bin_edges=positive_bin_edges))
-    negative_source = ColumnDataSource(data=dict(couplings=negative_couplings, bins=negative_bins, histogram=negative_histogram, bin_edges=negative_bin_edges))
+    positive_source = ColumnDataSource(data=dict(histogram=positive_histogram, bin_edges=positive_bin_edges))
+    negative_source = ColumnDataSource(data=dict(histogram=negative_histogram, bin_edges=negative_bin_edges))
     
-    return positive_source, negative_source
+    return positive_source, negative_source, positive_couplings, negative_couplings
 
 # Now we have a function that can be integrated into the Bokeh app script.
 # The function returns ColumnDataSources which can be directly used to source a Bokeh plot.
@@ -65,8 +66,6 @@ def calculate_couplings_histogram(J_df):
 
 # Let's define another function that creates the histogram plots for the positive and negative couplings.
 # This function will initialise the plots and data sources, which can be updated in the 'update' function.
-
-from scipy.optimize import curve_fit
 
 def plot_power_law_pdf(data):
     """
@@ -98,13 +97,13 @@ def create_histogram_plots(J_df):
       and positive_source and negative_source are the ColumnDataSources for the plots.
     """
     # Initialise data sources for the histograms
-    positive_source, negative_source = calculate_couplings_histogram(J_df)
+    positive_source, negative_source, positive_couplings, negative_couplings = calculate_couplings_histogram(J_df)
 
     # Generate a fitted line for positive couplings
-    fitted_positive_x, fitted_positive_y = plot_power_law_pdf(positive_source.data['couplings'])
+    fitted_positive_x, fitted_positive_y = plot_power_law_pdf(positive_couplings)
 
     # Generate a fitted line for negative couplings
-    fitted_negative_x, fitted_negative_y = plot_power_law_pdf(negative_source.data['couplings'])
+    fitted_negative_x, fitted_negative_y = plot_power_law_pdf(negative_couplings)
 
     # Create the figure for the positive couplings histogram
     positive_fig = figure(title="Positive Couplings", tools=[],
