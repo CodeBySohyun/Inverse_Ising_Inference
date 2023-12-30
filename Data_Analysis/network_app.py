@@ -26,7 +26,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_FILE_PATH = os.path.join(BASE_DIR, 'Results', 'J_matrix.csv')
+DATA_FILE_PATH = os.path.join(BASE_DIR, 'Results', 'J.csv')
 
 TOOLTIP_TEMPLATE = """
 <div>
