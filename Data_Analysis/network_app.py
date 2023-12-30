@@ -15,7 +15,7 @@ from bokeh.palettes import RdBu as palette
 from collections import defaultdict
 from decouple import config
 from Utility.author_credit import add_author_table
-from Utility.network_pdf import calculate_couplings_histogram, create_histogram_plots
+from Utility.network_pdf import create_histogram_plots
 import networkx as nx
 import pandas as pd
 import numpy as np
@@ -252,13 +252,6 @@ class CurrencyNetworkApp:
             'index_1_based': [i + 1 for i in range(len(sorted_filtered_bc))]
         })
 
-        # Call the function to get the updated histograms based on the current J matrix
-        new_positive_source, new_negative_source = calculate_couplings_histogram(self.J)
-
-        # Update the plot data sources with the new histograms
-        self.positive_plot_data_source.data.update(new_positive_source.data)
-        self.negative_plot_data_source.data.update(new_negative_source.data)
-
     @staticmethod
     def calculate_positions(G, weight_threshold):
         edges_to_keep = [(u, v) for u, v, d in G.edges(data=True) if abs(d['weight']) > weight_threshold]
@@ -308,9 +301,9 @@ def modify_doc(doc):
         app.J, app.G = app.load_data(DATA_FILE_PATH)
         app.nodes_cds, app.edges_cds = app.initialise_graph_components(app.G)
         app.plot, app.graph_renderer = app.create_plot()
-        app.positive_fig, app.negative_fig, app.positive_plot_data_source, \
-        app.negative_plot_data_source, app.positive_threshold_line, \
-        app.negative_threshold_line = create_histogram_plots()
+        app.positive_fig, app.negative_fig, \
+        app.positive_plot_data_source, app.negative_plot_data_source, \
+        app.positive_threshold_line, app.negative_threshold_line = create_histogram_plots(app.J)
         app.bc_source = ColumnDataSource({'currency': [], 'betweenness': []})
         app.bc_table = app.create_data_table()
         app.slider, app.threshold_value_div = app.create_slider()
