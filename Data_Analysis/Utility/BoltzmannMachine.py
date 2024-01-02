@@ -215,7 +215,7 @@ class BoltzmannMachine:
     def _log_PL_and_gradients(J, h, w, b, X):
         n, d = X.shape  # Number of samples and dimensions
 
-        S_ij = X @ J + h - X * np.diag(J)  # Broadcasting h and subtracting k=j terms
+        S_ij = X @ J + h  # Broadcasting h
         full_S_ik = X @ w + b  # for all samples
         S_ik = X @ w.reshape(-1, 1) + b - X * w  # Broadcasting w
 
@@ -233,17 +233,17 @@ class BoltzmannMachine:
         log_denominator = np.log(denominator)  # Sum over dimensions for each sample
 
         # Combine the terms and sum over all samples to get the scalar log-likelihood
-        log_likelihood = (x_times_Sij + log_numerator - log_denominator).sum()
+        log_likelihood = np.sum(x_times_Sij + log_numerator - log_denominator)
 
         # Gradients for h, w, and b
         numerator_h = -exp_neg_Sij * cosh_neg + exp_pos_Sij * cosh_pos
-        grad_h = (X - numerator_h / denominator).sum(axis=0)
+        grad_h = np.sum(X - numerator_h / denominator, axis=0)
 
         numerator_w = -exp_neg_Sij * sinh_neg + exp_pos_Sij * sinh_pos
-        grad_w = (X.T * np.tanh(full_S_ik.T) - (numerator_w / denominator).T).sum(axis=1)
+        grad_w = np.sum(X.T * np.tanh(full_S_ik.T) - (numerator_w / denominator).T, axis=1)
 
         numerator_b = exp_neg_Sij * sinh_neg + exp_pos_Sij * sinh_pos
-        grad_b = (np.tanh(full_S_ik.reshape(-1, 1)) - (numerator_b / denominator)).sum(axis=0).sum()
+        grad_b = np.sum(np.tanh(full_S_ik.reshape(-1, 1)) - (numerator_b / denominator))
 
         # Gradient for J, excluding the diagonal
         mask = np.ones_like(J) - np.eye(d)
@@ -317,8 +317,7 @@ class BoltzmannMachine:
         pd.DataFrame(self.J_optimised, columns=self.symbols, index=self.symbols).to_csv(J_path, index=False)
         print(f"The optimised J matrix has been saved to '{J_path}'.")
 
-        h_df = pd.DataFrame({'h': self.h_optimised}, index=self.symbols)
-        h_df.to_csv(h_path, index=True, header=False)
+        pd.DataFrame({'h': self.h_optimised}, index=self.symbols).to_csv(h_path, index=True, header=False)
         print(f"The optimised h vector has been saved to '{h_path}'.")
 
     def _save_extended_results(self, J_extended_path, h_extended_path, data_matrix_extended_path):
