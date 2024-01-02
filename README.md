@@ -1,38 +1,44 @@
 # Inverse Ising Inference on Foreign Exchange Markets
 
 ## Overview
-This repository contains the work for a final year Physics project at the University of Bristol, applying inverse Ising inference to analyse correlations between currency pairs in foreign exchange markets.
+This repository hosts my final year pioneering Physics project from the University of Bristol. It focuses on applying inverse Ising inference to unravel the complex correlations between currency pairs in the foreign exchange markets. My approach, inspired by neuroscience and condensed matter physics, adapts techniques typically used in spin system analyses to the realm of financial data.
+
+## Project Description
+My primary objective is to identify and correct for the spill-over effect in currency correlations, distinguishing real interactions from superficial ones. I explore how economic announcements and global events, like the COVID-19 pandemic or the 2008 financial crisis, influence these correlations. Unlike traditional correlation studies, my project leverages the machine learning techniques-inverse Ising inference proposes a novel perspective on the underlying structure and dynamics of currency relationships.
+
+## Methodology
+My methodology involves mapping foreign exchange rates onto a network of spins, where each node represents a currency. By studying the coupling constants between these nodes, I aim to determine the strength and nature of currency interactions. This method allows me to look beyond apparent correlations to the true connections, potentially altered by economic regimes and policies.
+
+I have implemented a pseudo-likelihood maximisation technique, an efficient variant of Maximum Likelihood Estimation, suitable for the complex nature of financial networks. This approach enables me to fit the inverse Ising model to my dataset, which spans from the early 2000s, post the introduction of the Euro, to the present, focusing on major freely floating currencies excluding those under heavy governmental control.
 
 ## Contents
+- **Data_Analysis/**:
+  - `ising_data_preprocessing.ipynb`: Data preparation and preprocessing, focusing on daily changes in currency rates relative to the dollar.
+  - `ising_optimisation_original.ipynb`: Preliminary model optimisation with comprehensive annotations.
+  - `ising_optimisation.ipynb`: Streamlined code for advanced model optimisation techniques.
+  - `ising_visualisation.ipynb`: Visual representations of data and model outputs.
+  - `ising_statistics.ipynb`: Statistical analysis of currency correlations and interactions.
+  - `network_app.py`: Sets up a Bokeh server application for visualising inferred network structures. It integrates features such as dynamic threshold filtering, histogram plotting, and betweenness centrality analysis, enhancing the visual analysis aspect of `ising_visualisation.ipynb`.
 
-- **Notebooks**:
-  - `ising_data_preprocessing.ipynb`: Data preprocessing.
-  - `ising_optimisation_original.ipynb`: Preliminary work for model optimisation with detailed comments
-  - `ising_optimisation.ipynb`: Streamlined code for model optimisation.
-  - `ising_statistics.ipynb`: Statistical analysis.
-  - `ising_visualisation.ipynb`: Data and model visualisation.
-
-- **Scripts**:
-  - `network_app.py`: Interactive network analysis application.
-  - `network_pdf.py`: PDF report generation for network analysis.
-  - `decorators.py`: Augments analysis script functionality.
+- **Data_Analysis/Utility/**:
+  - `IsingOptimiser.py`: Defines the IsingOptimiser class for optimising an Ising model on financial data. This script includes methods for data subset division, optimisation, and result visualisation. It plays a crucial role in `ising_optimisation.ipynb` by providing the necessary tools for model fitting and analysis.
+  - `BoltzmannMachine.py`: Establishes the BoltzmannMachine class for training a Boltzmann machine. This script is vital for extending the capabilities of `ising_optimisation.ipynb`, offering advanced optimisation methods including the hidden variable, detailed result analysis, visualisation, and saving extended results.
+  - `network_pdf.py`: Generates plots of histograms from a coupling matrix, including power law fitting. This script is used within `network_app.py`.
+  - `decorators.py`: Provides auxiliary functions that augment the functionality of the main analysis scripts
 
 - **Additional Resources**:
-  - `Data/`: Historical exchange rate data.
-  - `Interim_Report.pdf`: Project objectives and findings summary.
-  - `References/`: Theoretical and methodological literature.
+  - `Data/Currency_Pairs/`: Historical exchange rate csv files.
+  - `Interim_Report.pdf`: Summary of project objectives and initial findings in the first half.
+  - `References/`: Literature on theoretical and methodological approaches.
 
 ## Execution Guide
-Process and analyse data in the following sequence:
-1. `ising_data_preprocessing.ipynb`: Prepares data for modelling.
-2. `ising_optimisation.ipynb`: Fits the Ising model to the data.
-3. `ising_visualisation.ipynb` & `ising_statistics.ipynb`: Visualisation and statistical analysis.
-4. `network_app.py` & `network_pdf.py`: Network analysis.
+Follow this sequence for processing and analysing the data:
+1. Data Preparation: Start with `IsingDataPreprocessing.ipynb`.
+2. Model Fitting: Proceed to `IsingOptimisation.ipynb`.
+3. Analysis: Utilise `IsingVisualisation.ipynb` and `IsingStatistics.ipynb` for in-depth statistical analysis.
+4. Network Examination: [PLM Currency Network](https://currency-network-ffd38c966f8f.autoidleapp.com)
 
 For detailed execution instructions, please refer to the individual files.
 
-## Collaboration
-Contributions via pull requests are encouraged and appreciated.
-
 ## Acknowledgments
-Gratitude to Dr. Thomas Machon and Dr. Francesco Turci for guidance, and the University of Bristol for support.
+Special thanks to Dr. Thomas Machon and Dr. Francesco Turci for their guidance, and to the University of Bristol for their support.
