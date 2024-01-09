@@ -33,9 +33,9 @@ I have implemented a pseudolikelihood maximisation technique, an efficient varia
 
 ## Execution Guide
 Follow this sequence for processing and analysing the data:
-1. Data Preparation: Start with `IsingDataPreprocessing.ipynb`.
-2. Model Fitting: Proceed to `IsingOptimisation.ipynb`.
-3. Analysis: Utilise `IsingVisualisation.ipynb` and `IsingStatistics.ipynb` for in-depth statistical analysis.
+1. Data Preparation: Start with `ising_data_preprocessing.ipynb`.
+2. Model Fitting: Proceed to `ising_optimisation.ipynb`.
+3. Analysis: Utilise `ising_visualisation.ipynb` and `ising_statistics.ipynb` for in-depth statistical analysis.
 4. Network Examination: [PLM Currency Network](https://currency-network-ffd38c966f8f.autoidleapp.com)
 
 For detailed execution instructions, please refer to the individual files.
