@@ -9,7 +9,7 @@ My primary objective is to identify and correct for the spill-over effect in cur
 ## Methodology
 My methodology involves mapping foreign exchange rates onto a network of spins, where each node represents a currency. By studying the coupling constants between these nodes, I aim to determine the strength and nature of currency interactions. This method allows me to look beyond apparent correlations to the true connections, potentially altered by economic regimes and policies.
 
-I have implemented a pseudo-likelihood maximisation technique, an efficient variant of Maximum Likelihood Estimation, suitable for the complex nature of financial networks. This approach enables me to fit the inverse Ising model to my dataset, which spans from the early 2000s, post the introduction of the Euro, to the present, focusing on major freely floating currencies excluding those under heavy governmental control.
+I have implemented a pseudolikelihood maximisation technique, an efficient variant of maximum likelihood estimation, suitable for the complex nature of financial networks. This approach enables me to fit the inverse Ising model to my dataset, which spans from the early 2000s, post the introduction of the Euro, to the present, focusing on major freely floating currencies excluding those under heavy governmental control.
 
 ## Contents
 - **Data_Analysis/**:
