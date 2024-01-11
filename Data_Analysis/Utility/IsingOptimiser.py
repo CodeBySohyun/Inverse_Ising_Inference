@@ -87,7 +87,7 @@ class IsingOptimiser:
 
             # Print statistical analysis results on J and h results
             print("Statistical Analysis of J_optimised and h_optimised:")
-            print(f"Mean of h_optimised: {self.J_optimised}")
+            print(f"Mean of J_optimised: {self.J_optimised}")
             print(f"Standard Deviation of J_optimised: {self.J_std}")
             print(f"Mean of h_optimised: {self.h_optimised}")
             print(f"Standard Deviation of h_optimised: {self.h_std}")
