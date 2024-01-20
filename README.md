@@ -1,7 +1,7 @@
 # Inverse Ising Inference on Foreign Exchange Markets
 
 ## Overview
-This repository hosts my final year pioneering Physics project from the University of Bristol. It focuses on applying inverse Ising inference to unravel the complex correlations between currency pairs in the foreign exchange markets. My approach, inspired by neuroscience and condensed matter physics, adapts techniques typically used in spin system analyses to the realm of financial data.
+This repository hosts my pioneering final year physics project from the University of Bristol. It focuses on applying inverse Ising inference to unravel the complex correlations between currency pairs in the foreign exchange markets. My approach, inspired by neuroscience and condensed matter physics, adapts techniques typically used in spin system analyses to the realm of financial data.
 
 ## Project Description
 My primary objective is to identify and correct for the spill-over effect in currency correlations, distinguishing real interactions from superficial ones. I explore how economic announcements and global events, like the COVID-19 pandemic or the 2008 financial crisis, influence these correlations. Unlike traditional correlation studies, my project leverages the machine learning techniques-inverse Ising inference proposes a novel perspective on the underlying structure and dynamics of currency relationships.
