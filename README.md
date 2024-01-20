@@ -1,15 +1,15 @@
 # Inverse Ising Inference on Foreign Exchange Markets
 
 ## Overview
-This repository hosts my pioneering final year physics project from the University of Bristol. It focuses on applying inverse Ising inference to unravel the complex correlations between currency pairs in the foreign exchange markets. My approach, inspired by neuroscience and condensed matter physics, adapts techniques typically used in spin system analyses to the realm of financial data.
+This repository hosts my pioneering final-year physics project from the University of Bristol. It focuses on applying inverse Ising inference to unravel the complex correlations between currency pairs in foreign exchange markets. Inspired by neuroscience and condensed matter physics, my approach adapts techniques typically used in spin system analyses to the realm of financial data.
 
 ## Project Description
-My primary objective is to identify and correct for the spill-over effect in currency correlations, distinguishing real interactions from superficial ones. I explore how economic announcements and global events, like the COVID-19 pandemic or the 2008 financial crisis, influence these correlations. Unlike traditional correlation studies, my project leverages the machine learning techniques-inverse Ising inference proposes a novel perspective on the underlying structure and dynamics of currency relationships.
+My primary objective is to identify and correct for the spillover effect in currency correlations, distinguishing effective interactions from superficial ones. I explore how economic announcements and global events, like the COVID-19 pandemic or the 2008 financial crisis, influence these correlations in search of phase transitions. Unlike traditional correlation studies, my project leverages machine learning techniques-inverse Ising inference proposing a novel perspective on the underlying structure and dynamics of currency relationships.
 
 ## Methodology
 My methodology involves mapping foreign exchange rates onto a network of spins, where each node represents a currency. By studying the coupling constants between these nodes, I aim to determine the strength and nature of currency interactions. This method allows me to look beyond apparent correlations to the true connections, potentially altered by economic regimes and policies.
 
-I have implemented a pseudolikelihood maximisation technique, an efficient variant of maximum likelihood estimation, suitable for the complex nature of financial networks. This approach enables me to fit the inverse Ising model to my dataset, which spans from the early 2000s, post the introduction of the Euro, to the present, focusing on major freely floating currencies excluding those under heavy governmental control.
+I have implemented a pseudolikelihood maximisation technique, an efficient variant of maximum likelihood estimation, suitable for the complex nature of financial networks. This approach enables me to fit the inverse Ising model to my dataset, which spans from the early 2000s, following the introduction of the Euro, to the present. It focuses on major freely floating currencies, excluding those under heavy governmental control.
 
 ## Contents
 - **Data_Analysis/**:
