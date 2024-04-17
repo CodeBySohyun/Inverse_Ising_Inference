@@ -2,7 +2,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
-from Utility.decorators import timer
+import matplotlib.lines as mlines
+import warnings
+import time
 
 class IsingOptimiser:
     def __init__(self, data_path):
@@ -14,68 +16,52 @@ class IsingOptimiser:
         """
         self.df = pd.read_csv(data_path)
         self.symbols = self.df.columns.tolist()[1:]
-        self.data_matrix = self.df.drop(columns=["Date"]).to_numpy()
-        self._divide_into_subsets()
+        self.X = self.df.drop(columns=["Date"]).to_numpy()
 
-    def _divide_into_subsets(self, num_subsets=4):
+    def train(self, max_attempts=1000, display_results=None):
         """
-        Divide the data set of observed currencies into approximately equal subsets.
-
-        Args:
-        num_subsets (int): The number of subsets to divide the data into.
-        """
-        num_currencies = len(self.symbols)
-        subset_size = num_currencies // num_subsets
-        extra = num_currencies % num_subsets
-
-        self.subsets_indices = {}
-        start = 0
-        for i in range(num_subsets):
-            end = start + subset_size + (1 if i < extra else 0)
-            self.subsets_indices[f'subset_{i+1}'] = list(range(start, end))
-            start = end
-
-        self.data_subsets = {key: self.data_matrix[:, indices] for key, indices in self.subsets_indices.items()}
-
-        # Print information about how the currencies have been divided into subsets
-        for key, indices in self.subsets_indices.items():
-            print(f"{key}: Currencies {indices[0] + 1} to {indices[-1] + 1}")
-
-    @timer
-    def train(self, max_attempts=1000):
-        """
-        Executes the training process for the model using the specified optimisation method.
-        The training involves optimising the model parameters in subsets ('optimise_all_subsets'),
-        depending on the chosen method.
+        This method attempts to optimise the model multiple times (up to 'max_attempts') 
+        If the optimisation is successful, the results are stored for averaging.
+        After reaching a predetermined number of successful optimisations,
+        it averages the results to obtain the final optimised parameters.
 
         Args:
             max_iterations (int): The maximum number of optimisation attempts.
+            display_results (str): If the input is 'scatter', it displays the scatter plots of optimised results
         """
 
         # Initialise lists to store the results of successful optimisations
         J_results, h_results = [], []
 
+        d = self.X.shape[1]  # Dimensionality of the model
         success_count = 0
         max_successes = max_attempts / 10 # Maximum number of successful optimisations required
 
         for attempt in range(max_attempts):
-            print(f"Attempt {attempt + 1} of optimisation")
+            # Initialise J and h
+            J_upper = np.triu(np.random.uniform(-1, 1, size=(d, d)), 1)
+            J = J_upper + J_upper.T
+            h = np.random.uniform(-1, 1, size=d)
 
+            # Start timing just before calling _optimise_model
+            start_time = time.time()
             # Perform the optimisation
-            J_optimised, h_optimised, success = self._optimise_all_subsets(max_attempts)
+            J_optimised, h_optimised, success = self._optimise_model(self.X, J, h)
+            # End timing right after the function call
+            end_time = time.time()
 
             # Store and count successful optimisations
             if success:
                 J_results.append(J_optimised)
                 h_results.append(h_optimised)
                 success_count += 1
-                print("Optimisation successful.\n")
+                print(f"Attempt {attempt + 1} of optimisation successful, execution time: {end_time - start_time:.3f} seconds")
 
                 # Stop if the required number of successes is achieved
                 if success_count >= max_successes:
                     break
             else:
-                print("Optimisation unsuccessful, restarting...\n")
+                print(f"Attempt {attempt + 1} of optimisation unsuccessful, restarting...")
 
         # Check and analyse the results if there were successful optimisations
         if J_results:
@@ -86,17 +72,105 @@ class IsingOptimiser:
             self.h_std = np.std(h_results, axis=0, ddof=1)
 
             # Print statistical analysis results on J and h results
-            print("Statistical Analysis of J_optimised and h_optimised:")
-            print(f"Mean of J_optimised: {self.J_optimised}")
-            print(f"Standard Deviation of J_optimised: {self.J_std}")
-            print(f"Mean of h_optimised: {self.h_optimised}")
-            print(f"Standard Deviation of h_optimised: {self.h_std}")
+            # print("Statistical Analysis of J_optimised and h_optimised:")
+            # print(f"Mean of h_optimised: {self.J_optimised}")
+            # print(f"Standard Deviation of J_optimised: {self.J_std}")
+            # print(f"Mean of h_optimised: {self.h_optimised}")
+            # print(f"Standard Deviation of h_optimised: {self.h_std}")
 
             print(f"Optimisation completed with averaged results after {success_count} successes.\n")
 
-            self.scatter_plots()
+            if display_results == 'scatter':
+                self.scatter_plots()
+            elif display_results == 'vertical':
+                self.vertical_plots()
         else:
             print("Optimisation was unsuccessful after maximum attempts.\n")
+
+    def _optimise_model(self, X, J, h):
+        """
+        Optimise the Ising model using the L-BFGS-B algorithm.
+        """
+        d = J.shape[0]  # Number of spins (currencies)
+
+        # Flatten the J matrix and h vector for the optimisation
+        x0 = np.hstack([J[np.triu_indices(d, k=1)], h])
+
+        def objective_function(x):
+            J, h = self._reconstruct_parameters(x, d)
+            # Modified to unpack the overflow flag
+            log_likelihood, grad_J, grad_h, overflow_occurred = self._log_pseudolikelihood_and_gradients(J, h, X)
+            
+            if overflow_occurred:
+                # If overflow occurred, return a large positive value to indicate a bad optimisation step
+                return 0, np.zeros_like(x)
+            return log_likelihood, np.hstack([grad_J[np.triu_indices(d, k=1)], grad_h])
+
+        # Use 'L-BFGS-B' for optimisation with Jacobian    
+        res = minimize(objective_function, x0, method='L-BFGS-B', jac=True)
+
+        # Consider the optimisation unsuccessful if overflow occurred (indicated by `fun` being 0)
+        if res.fun == 0:
+            return None, None, False
+
+        # Reconstruct the optimised J matrix and h vector from the optimisation result
+        J_optimised, h_optimised = self._reconstruct_parameters(res.x, d)
+
+        return J_optimised, h_optimised, res.success
+
+    @staticmethod
+    def _reconstruct_parameters(flattened_array, d):
+        """
+        Helper function to reconstruct the symmetric J matrix and h vector from a flattened array.
+        """
+        num_J_elements = d * (d - 1) // 2
+        J_upper_tri = flattened_array[:num_J_elements]
+        h = flattened_array[num_J_elements:]
+
+        # Construct the symmetric J matrix from the upper triangular part
+        J = np.zeros((d, d))
+        J[np.triu_indices(d, k=1)] = J_upper_tri
+        J += J.T  # Symmetrise the J matrix
+
+        return J, h
+
+    @staticmethod
+    def _log_pseudolikelihood_and_gradients(J, h, X):
+        """
+        Calculate the log-pseudo-likelihood for the Ising model and its gradients.
+        Catch overflow warnings and handle them gracefully.
+        """
+        d = X.shape[1]  # Number of dimensions
+
+        try:
+            # Temporarily treat overflow warnings as errors
+            with warnings.catch_warnings():
+                warnings.simplefilter("error")
+                
+                # Compute S, broadcasting h
+                S = X @ J + h
+                S_exp = np.exp(2 * X * S)
+
+                # Update log-likelihood
+                log_likelihood = np.sum(- np.log(1 + 1/S_exp))
+
+                grad_term = 2 * X / (1 + S_exp)
+                grad_h = np.sum(grad_term, axis=0)
+
+                # Compute the gradient for J, excluding the diagonal
+                # Create a mask to zero out diagonal contributions in the grad_J calculation
+                mask = np.ones_like(J) - np.eye(d)
+                grad_J = (grad_term.T @ X + X.T @ grad_term) * mask
+
+                overflow_occurred = False  # No overflow occurred
+
+        except Warning as e:
+            print(f'Warning encountered during optimisation: {e}')
+            # Return zeros and indicate that an overflow occurred
+            return 0, np.zeros_like(J), np.zeros_like(h), True
+
+        # Return the negative likelihood and gradients for minimisation, and the overflow flag
+        return -log_likelihood, -grad_J, -grad_h, overflow_occurred
 
     def scatter_plots(self):
         d = len(self.symbols)
@@ -110,163 +184,73 @@ class IsingOptimiser:
         # Scatter plot for J
         plt.subplot(1, 2, 1)
         plt.errorbar(J_means, range(len(J_means))[::-1], xerr=J_std, fmt='o', ecolor='r', capsize=5, label='J elements', markersize=5)
-        plt.title("Coupling Constants (J) Between Observed Currencies")
-        plt.ylabel("Element Index in J")
-        plt.xlabel("Mean Values and Standard Deviations")
+        plt.title(r"Coupling Constants (\mathbf{\mathit{J}}) Between Currencies", fontsize=16)
+        plt.yticks(fontsize=12)
+        plt.xticks(fontsize=12)
+        plt.ylabel(r"Upper Triangular Element Index in \mathbf{\mathit{J}}", fontsize=14)
+        # plt.xlabel("Mean Values and Standard Deviations", fontsize=14)
         plt.grid(True)
-        plt.legend()
 
         # Scatter plot for h
         plt.subplot(1, 2, 2)
         plt.errorbar(self.h_optimised[::-1], reversed_symbols, xerr=self.h_std, fmt='o', ecolor='r', capsize=5, label='h elements')
-        plt.title("External Fields (h) for Observed Currencies")
-        plt.yticks(range(d), reversed_symbols)
-        plt.xlabel("Mean Values and Standard Deviations")
+        plt.title(r"External Fields (\mathbf{\mathit{h}}) for Each Currencies", fontsize=16)
+        plt.yticks(range(d), reversed_symbols, fontsize=12)
+        plt.xticks(fontsize=12)
+        # plt.xlabel("Mean Values and Standard Deviations", fontsize=14)
         plt.grid(True)
-        plt.legend()
 
         plt.tight_layout()
-        plt.suptitle("Scatter Plots of Optimised Parameter Values Across Successful Optimisations", fontsize=16, y=1.02)
+
+        # Custom legend
+        mean_value_legend = mlines.Line2D([], [], marker='o', linestyle='None', markersize=10, label='Mean values')
+        std_dev_legend = mlines.Line2D([], [], color='r', marker='|', linestyle='None', markersize=10, mew=2, label='Standard deviations')
+
+        # Assemble legend rows
+        legend_row = [mean_value_legend, std_dev_legend]
+
+        # Create common legend
+        plt.figlegend(handles=legend_row, loc='lower center', bbox_to_anchor=(0.5, -0.08), fancybox=True, shadow=True, ncol=2, fontsize='xx-large')
+
+        plt.savefig("Images/optimised_parameters.svg", format="svg", bbox_inches='tight')
+
+        # plt.suptitle("Scatter Plots of Optimised Parameter Values Across Successful Optimisations", fontsize=20, y=1.05)
         plt.show()
 
-    @timer
-    def _optimise_all_subsets(self, max_attempts):
-        optimised = False
-        for attempt in range(max_attempts):
-            J_initial = {key: np.random.uniform(-1, 1, (len(indices), len(indices)))
-                            for key, indices in self.subsets_indices.items()}
-            for key, matrix in J_initial.items():
-                upper_tri = np.triu(matrix, k=1)  # Extract upper triangular part with k=1 to exclude the diagonal
-                J_initial[key] = upper_tri + upper_tri.T  # Make the matrix symmetric with zeros on the diagonal
-            h_initial = {key: np.random.uniform(-1, 1, len(indices))
-                            for key, indices in self.subsets_indices.items()}
-            optimised_results = {}
-            for index, (key, data_subset) in enumerate(self.data_subsets.items(), 1):
-                J_opt, h_opt, success = self._optimise_subset(data_subset, J_initial[key], h_initial[key], index)
-                if not success:
-                    print(f"Subset {key} failed to optimise. Restarting optimisation.\n")
-                    break
-                optimised_results[key] = (J_opt, h_opt, success)
-            else:
-                # Combine subsets 1 and 2, and subsets 3 and 4
-                J_combined_1_2, h_combined_1_2 = (
-                    self._combine_J_matrices(optimised_results['subset_1'][0], optimised_results['subset_2'][0]), 
-                    np.hstack((optimised_results['subset_1'][1], optimised_results['subset_2'][1])))
-                J_combined_3_4, h_combined_3_4 = (
-                    self._combine_J_matrices(optimised_results['subset_3'][0], optimised_results['subset_4'][0]), 
-                    np.hstack((optimised_results['subset_3'][1], optimised_results['subset_4'][1])))
+    def vertical_plots(self):
+        d = len(self.symbols)
+        reversed_symbols = [col[:3] if len(col) == 6 else col for col in self.symbols[::-1]]  # Reverse the order of symbols
+        J_means = self.J_optimised[np.triu_indices(d, k=1)]
+        J_std = self.J_std[np.triu_indices(d, k=1)]
 
-                # Optimise the combined larger subsets
-                J_optimised_1_2, h_optimised_1_2, success_1_2 = (
-                    self._optimise_subset(self.data_matrix[:, self.subsets_indices['subset_1'] + self.subsets_indices['subset_2']], 
-                                          J_combined_1_2, h_combined_1_2, '1_2'))
-                if not success_1_2:
-                    print("Combined subset 1_2 optimisation failed. Restarting optimisation.\n")
-                    continue
-                J_optimised_3_4, h_optimised_3_4, success_3_4 = (
-                    self._optimise_subset(self.data_matrix[:, self.subsets_indices['subset_3'] + self.subsets_indices['subset_4']], 
-                                          J_combined_3_4, h_combined_3_4, '3_4'))
-                if not success_3_4:
-                    print("Combined subset 3_4 optimisation failed. Restarting optimisation.\n")
-                    continue
+        # Create a figure and multiple axes
+        _, axs = plt.subplots(2, 1, figsize=(8, 14))  # 2 rows, 1 column
 
-                # Final optimisation with the entire dataset
-                J_final_combined = self._combine_J_matrices(J_optimised_1_2, J_optimised_3_4)
-                h_final_combined = np.hstack((h_optimised_1_2, h_optimised_3_4))
+        # Scatter plot for J
+        axs[0].errorbar(J_means, range(len(J_means))[::-1], xerr=J_std, fmt='o', ecolor='r', capsize=5, label='J elements', markersize=5)
+        axs[0].set_title(r'Couplings ($\mathit{J}_{ij}$) Between Currencies', fontsize=20, pad=10)
+        axs[0].set_ylabel(r'Upper Triangular Element Index in $\mathbf{\mathbf{J}}$', fontsize=16)
+        axs[0].tick_params(axis='both', which='major', labelsize=14)
+        axs[0].grid(True)
 
-                J_optimised_full, h_optimised_full, success_full = self._optimise_subset(self.data_matrix, J_final_combined, h_final_combined, 'full')
+        # Scatter plot for h
+        axs[1].errorbar(self.h_optimised[::-1], reversed_symbols, xerr=self.h_std, fmt='o', ecolor='r', capsize=5, label='h elements')
+        axs[1].set_title(r'External Fields ($\mathit{h}_{i}$) for Each Currencies', fontsize=20, pad=10)
+        axs[1].set_ylabel("Currency", fontsize=16)
+        axs[1].set_yticks(range(d))
+        axs[1].set_yticklabels(reversed_symbols)
+        axs[1].tick_params(axis='both', which='major', labelsize=14)
+        axs[1].grid(True)
 
-                # Check success for final optimisation
-                if not success_full:
-                    print("Final optimisation failed. Restarting optimisation.\n")
-                    continue
+        # Add legend
+        mean_value_legend = mlines.Line2D([], [], marker='o', linestyle='None', markersize=10, label='Mean values')
+        std_dev_legend = mlines.Line2D([], [], color='r', marker='|', linestyle='None', markersize=10, mew=2, label='Standard deviations')
+        axs[1].legend(handles=[mean_value_legend, std_dev_legend], loc='lower center', bbox_to_anchor=(0.5, -0.175), fancybox=True, shadow=True, ncol=2, fontsize='xx-large')
 
-                # print("Final optimisation completed.\n")
-                return J_optimised_full, h_optimised_full, success_full
-        print("Optimisation was unsuccessful after maximum attempts.\n")
-        return optimised
+        plt.tight_layout()
 
-    def _optimise_subset(self, data_subset, J_subset, h_subset, subset_index):
-        """
-        Optimise a subset of the Ising model using the L-BFGS-B algorithm.
-
-        Args:
-        subset_index (int): Index of the subset being optimised.
-        """
-        d = J_subset.shape[0]  # Number of spins (currencies)
-
-        # Flatten the J matrix and h vector for the optimisation
-        x0 = np.concatenate([J_subset[np.triu_indices(d, k=1)], h_subset])
-
-        def objective_function(x):
-            # Construct the symmetric J matrix and calculate the likelihood and gradients
-            J, h = self._reconstruct_J_and_h(x, d)
-            likelihood, grad_J, grad_h = self._log_pseudolikelihood_and_gradients(J, h, data_subset)
-            # Combine and return the likelihood and flattened gradients
-            return likelihood, np.concatenate([grad_J[np.triu_indices(d, k=1)], grad_h])
-        
-        # Execute the optimisation using the objective function and initial guesses
-        res = minimize(objective_function, x0, method='L-BFGS-B', jac=True)
-
-        # Reconstruct the optimised J matrix and h vector from the optimisation result
-        J_optimised, h_optimised = self._reconstruct_J_and_h(res.x, d)
-
-        return J_optimised, h_optimised, res.success
-
-    @staticmethod
-    def _reconstruct_J_and_h(flattened_array, d):
-        """
-        Helper function to reconstruct the symmetric J matrix and h vector from a flattened array.
-        """
-        J_upper_tri = flattened_array[:d * (d - 1) // 2]
-        h = flattened_array[d * (d - 1) // 2:]
-
-        # Construct the symmetric J matrix from the upper triangular part
-        J = np.zeros((d, d))
-        J[np.triu_indices(d, k=1)] = J_upper_tri
-        J += J.T  # Symmetrise the J matrix
-
-        return J, h
-
-    @staticmethod
-    def _log_pseudolikelihood_and_gradients(J, h, X):
-        """
-        Calculate the log-pseudo-likelihood for the Ising model and its gradients.
-        """
-        d = X.shape[1]  # Number of dimensions
-        grad_J, grad_h = np.zeros_like(J), np.zeros_like(h)
-
-        # Vectorised version
-        S_ij = X @ J + h  # Compute S_ij vectorised, broadcasting h
-        log_likelihood = np.sum(X * S_ij) - np.sum(np.log(2 * np.cosh(S_ij)))
-
-        tanh_S_ij = np.tanh(S_ij)
-        grad_h = np.sum(X - tanh_S_ij, axis=0)
-
-        # Compute the gradient for J, excluding the diagonal
-        # Create a mask to zero out diagonal contributions in the grad_J calculation
-        mask = np.ones_like(J) - np.eye(d)
-        grad_J = ((X - tanh_S_ij).T @ X) * mask
-        grad_J = (grad_J + grad_J.T)
-        
-        # Return the negative likelihood and gradients for minimisation
-        return -log_likelihood, -grad_J, -grad_h
-
-    @staticmethod
-    def _combine_J_matrices(*matrices):
-        """
-        Combine smaller J matrices into a larger J matrix.
-        """
-        size = sum(m.shape[0] for m in matrices)
-        J_combined = np.zeros((size, size))
-
-        current_index = 0
-        for m in matrices:
-            m_size = m.shape[0]
-            J_combined[current_index:current_index+m_size, current_index:current_index+m_size] = m
-            current_index += m_size
-
-        return J_combined
+        plt.savefig("Images/optimised_parameters.svg", format="svg", bbox_inches='tight')
+        plt.show()
 
     def save_results(self, J_file_path, h_file_path, J_std_file_path, h_std_file_path):
         """
