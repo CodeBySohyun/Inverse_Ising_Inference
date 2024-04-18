@@ -23,6 +23,7 @@ Financial datasets are difficult to estimate due to their inherent heavy-tailed 
 - **Additional Resources**:
   - `Data/Currency_Pairs/`: Historical exchange rate CSV files.
   - `Interim_Report.pdf`: Summary of project objectives and initial findings in the first half.
+  - **`Statistical Mechancis of Foreign Exchange Markets.pdf`: Final report.**
   - `References/`: Literature on theoretical and methodological approaches, [Litmaps](https://app.litmaps.com/shared/4ff00cbb-1c76-432a-af00-e0c6af755c6f).
 
 ## Execution Guide
