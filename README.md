@@ -4,7 +4,7 @@
 This repository hosts my pioneering final-year physics project from the University of Bristol. Inspired by computational neuroscience and condensed matter physics, I focus on applying inverse Ising inference to uncover the complex correlation structure of foreign exchange markets.
 
 ## Abstract
-Financial datasets are difficult to estimate due to their inherent heavy-tailed distribution. A solution to this problem is inverse Ising inference, also known as pairwise maximum entropy modelling. The correlation structure of foreign exchange markets was reconstructed using this machine learning technique. Additionally, data-driven methods including pseudolikelihood maximisation and the Metropolis algorithm were employed to explore two decades of time series, to identify transformative shifts corresponding to known geopolitical and financial events, and infer criticality in dynamic market structure. This may suggest a role for self-correcting feedback mechanisms in maintaining a market critical state.
+Financial datasets are difficult to estimate due to their inherent heavy-tailed distribution. A solution to this problem is inverse Ising inference, also known as pairwise maximum entropy modelling. The correlation structure of foreign exchange markets was reconstructed using this machine learning technique. Additionally, data-driven methods including pseudolikelihood maximisation and the Metropolis algorithm were employed to explore two decades of time series, to identify transformative shifts corresponding to known geopolitical and financial events, and to infer criticality in the dynamic market structure. This may suggest a role for self-correcting feedback mechanisms in maintaining a market steady state.
 
 ## Contents
 - **Data_Analysis/**:
@@ -23,6 +23,7 @@ Financial datasets are difficult to estimate due to their inherent heavy-tailed 
 - **Additional Resources**:
   - `Data/Currency_Pairs/`: Historical exchange rate CSV files.
   - `Interim_Report.pdf`: Summary of project objectives and initial findings in the first half.
+  - `Statistical Mechancis of Foreign Exchange Markets.pdf`: **Final report.**
   - `References/`: Literature on theoretical and methodological approaches, [Litmaps](https://app.litmaps.com/shared/4ff00cbb-1c76-432a-af00-e0c6af755c6f).
 
 ## Execution Guide
